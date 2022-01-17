@@ -64,14 +64,14 @@ describe('Lightbox structure', () => {
     expect(wrapper.find('.ril-bottom-bar').length).toEqual(1);
   });
 
-  it('contains a top bar when showTopBar is true (default)', () => {
+  it('contains a top bar when showToolbar is true (default)', () => {
     expect(wrapper.find('.ril-toolbar').length).toEqual(1);
   });
 
-  it('does not contain a top bar when showTopBar is set to false', () => {
-    wrapper.setProps({ showTopBar: false });
+  it('does not contain a top bar when showToolbar is set to false', () => {
+    wrapper.setProps({ showToolbar: false });
     expect(wrapper.find('.ril-toolbar').length).toEqual(0);
-    wrapper.setProps({ showTopBar: true });
+    wrapper.setProps({ showToolbar: true });
   });
 
   it('contains custom toolbar buttons when supplied', () => {

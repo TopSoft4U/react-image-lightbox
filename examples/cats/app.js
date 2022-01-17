@@ -1,10 +1,9 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import React, { Component } from 'react';
+import { Modal } from 'react-bootstrap';
 import Lightbox from '../../src';
-// import Lightbox from 'react-image-lightbox';
-// In your own app, you would need to use import styles once in the app
-// import 'react-image-lightbox/styles.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './stylesheets/vendor/stylesheet.css';
-import './stylesheets/vendor/github-light.css';
 import './stylesheets/app.css';
 import image1 from './images/1.jpg';
 import image2 from './images/2.jpg';
@@ -14,6 +13,10 @@ import image1Thumb from './images/1_thumb.jpg';
 import image2Thumb from './images/2_thumb.jpg';
 import image3Thumb from './images/3_thumb.jpg';
 import image4Thumb from './images/4_thumb.jpg';
+
+// import Lightbox from 'react-image-lightbox';
+// In your own app, you would need to use import styles once in the app
+// import 'react-image-lightbox/styles.css';
 
 const images = [image1, image2, image3, image4];
 const thumbs = [image1Thumb, image2Thumb, image3Thumb, image4Thumb];
@@ -102,7 +105,7 @@ class App extends Component {
 
     this.state = {
       index: 0,
-      isOpen: false,
+      isOpen: true,
     };
 
     this.openLightbox = this.openLightbox.bind(this);
@@ -132,35 +135,36 @@ class App extends Component {
   }
 
   render() {
-    let lightbox;
-    if (this.state.isOpen) {
-      lightbox = (
-        <Lightbox
-          mainSrc={images[this.state.index]}
-          nextSrc={images[(this.state.index + 1) % images.length]}
-          prevSrc={
-            images[(this.state.index + images.length - 1) % images.length]
-          }
-          mainSrcThumbnail={thumbs[this.state.index]}
-          nextSrcThumbnail={thumbs[(this.state.index + 1) % images.length]}
-          prevSrcThumbnail={
-            thumbs[(this.state.index + images.length - 1) % images.length]
-          }
-          onCloseRequest={this.closeLightbox}
-          onMovePrevRequest={this.movePrev}
-          onMoveNextRequest={this.moveNext}
-          onImageLoadError={App.onImageLoadError}
-          imageTitle={titles[this.state.index]}
-          footer={
-            captions[this.state.index] && (
-              <div>
-                <p>{captions[this.state.index]}</p>
-              </div>
-            )
-          }
-        />
-      );
-    }
+    const lightbox = (
+      <Modal fullscreen show={this.state.isOpen} onHide={this.closeLightbox}>
+        <Modal.Body>
+          <Lightbox
+            mainSrc={images[this.state.index]}
+            nextSrc={images[(this.state.index + 1) % images.length]}
+            prevSrc={
+              images[(this.state.index + images.length - 1) % images.length]
+            }
+            mainSrcThumbnail={thumbs[this.state.index]}
+            nextSrcThumbnail={thumbs[(this.state.index + 1) % images.length]}
+            prevSrcThumbnail={
+              thumbs[(this.state.index + images.length - 1) % images.length]
+            }
+            onCloseRequest={this.closeLightbox}
+            onMovePrevRequest={this.movePrev}
+            onMoveNextRequest={this.moveNext}
+            onImageLoadError={App.onImageLoadError}
+            imageTitle={titles[this.state.index]}
+            footer={
+              captions[this.state.index] && (
+                <div>
+                  <p>{captions[this.state.index]}</p>
+                </div>
+              )
+            }
+          />
+        </Modal.Body>
+      </Modal>
+    );
 
     return (
       <div>

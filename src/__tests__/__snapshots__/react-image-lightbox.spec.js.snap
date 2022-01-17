@@ -28,9 +28,8 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
   prevLabel="Previous image"
   prevSrc={null}
   prevSrcThumbnail={null}
-  showTopBar={true}
+  showToolbar={true}
   toolbarButtons={null}
-  wrapperClassName=""
   zoomInLabel="Zoom in"
   zoomOutLabel="Zoom out"
 >

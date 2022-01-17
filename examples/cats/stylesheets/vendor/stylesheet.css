@@ -225,7 +225,6 @@ body {
   display: block;
   width: 100%;
   overflow: auto;
-  word-break: normal;
   word-break: keep-all;
 }
 .main-content table th {
@@ -311,4 +310,9 @@ body {
   .site-footer {
     font-size: 0.9rem;
   }
+}
+
+.modal-body {
+  padding: 0;
+  overflow: hidden;
 }

@@ -27,7 +27,6 @@ export interface ILightBoxProps {
   toolbarButtons?: React.ReactNode[];
   imagePadding?: number;
   enableZoom?: boolean;
-  wrapperClassName?: string;
   nextLabel?: string;
   prevLabel?: string;
   zoomInLabel?: string;
@@ -35,6 +34,10 @@ export interface ILightBoxProps {
   closeLabel?: string;
   footer?: React.ReactNode;
   showTopBar?: boolean;
+  outerClassName?: string;
+  toolbarClassName?: string;
+  innerClassName?: string;
+  footerClassName?: string;
 }
 
 export default class Lightbox extends React.Component<ILightBoxProps, never> {}

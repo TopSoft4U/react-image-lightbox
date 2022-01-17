@@ -104,7 +104,10 @@ Play with the code on the [example on CodeSandbox](https://codesandbox.io/s/l9n3
 | toolbarButtons                  | node[] | Array of custom toolbar buttons                                                                                                                               |
 | imagePadding                    | number | Padding (px) between the edge of the window and the lightbox. Defaults to `10`.                                                                               |
 | enableZoom                      |  bool  | Set to `false` to disable zoom functionality and hide zoom buttons. Defaults to `true`.                                                                       |
-| wrapperClassName                | string | Class name which will be applied to root element after React Modal                                                                                            |
+| outerClassName                  | string | Class name which will be applied to root element                                                                                                              |
+| toolbarClassName                | string | Class name which will be applied to top bar element                                                                                                           |
+| innerClassName                  | string | Class name which will be applied to inner element                                                                                                             |
+| footerClassName                 | string | Class name which will be applied to bottom bar element                                                                                                        |
 | nextLabel                       | string | `aria-label` and `title` set on the 'Next' button. Defaults to `'Next image'`.                                                                                |
 | prevLabel                       | string | `aria-label` and `title` set on the 'Previous' button. Defaults to `'Previous image'`.                                                                        |
 | zoomInLabel                     | string | `aria-label` and `title` set on the 'Zoom In' button. Defaults to `'Zoom in'`.                                                                                |

@@ -1245,7 +1245,7 @@ class ReactImageLightbox extends Component {
       imageCrossOrigin,
       loader,
       footer,
-      showTopBar,
+      showToolbar,
     } = this.props;
     const {
       zoomLevel,
@@ -1405,7 +1405,7 @@ class ReactImageLightbox extends Component {
           {
             'ril-outer-closing': isClosing,
           },
-          this.props.wrapperClassName
+          this.props.outerClassName
         )}
         style={{
           transition: `opacity ${animationDuration}ms`,
@@ -1422,8 +1422,10 @@ class ReactImageLightbox extends Component {
         onKeyDown={this.handleKeyInput}
         onKeyUp={this.handleKeyInput}
       >
-        {showTopBar && (
-          <div className="ril-toolbar">
+        {showToolbar && (
+          <div
+            className={classNames('ril-toolbar', this.props.toolbarClassName)}
+          >
             <ul className="ril-toolbar-side ril-toolbar-left">
               <li className="ril-toolbar-item">
                 <span className="ril-toolbar-item-child">{imageTitle}</span>
@@ -1471,7 +1473,9 @@ class ReactImageLightbox extends Component {
           </div>
         )}
 
-        <div className="ril-inner">{images}</div>
+        <div className={classNames('ril-inner', this.props.innerClassName)}>
+          {images}
+        </div>
 
         {prevSrc && (
           <button // Move to previous image button
@@ -1495,7 +1499,13 @@ class ReactImageLightbox extends Component {
           />
         )}
 
-        {footer && <div className="ril-bottom-bar">{footer}</div>}
+        {footer && (
+          <div
+            className={classNames('ril-bottom-bar', this.props.footerClassName)}
+          >
+            {footer}
+          </div>
+        )}
       </div>
     );
   }
@@ -1604,8 +1614,6 @@ ReactImageLightbox.propTypes = {
   // Padding (px) between the edge of the window and the lightbox
   imagePadding: PropTypes.number,
 
-  wrapperClassName: PropTypes.string,
-
   //-----------------------------
   // Other
   //-----------------------------
@@ -1633,7 +1641,13 @@ ReactImageLightbox.propTypes = {
 
   // New props - custom
   footer: PropTypes.node,
-  showTopBar: PropTypes.bool,
+  showToolbar: PropTypes.bool,
+
+  // Class names
+  outerClassName: PropTypes.string,
+  toolbarClassName: PropTypes.string,
+  innerClassName: PropTypes.string,
+  footerClassName: PropTypes.string,
 };
 
 ReactImageLightbox.defaultProps = {
@@ -1661,13 +1675,20 @@ ReactImageLightbox.defaultProps = {
   prevLabel: 'Previous image',
   prevSrc: null,
   prevSrcThumbnail: null,
-  wrapperClassName: '',
   zoomInLabel: 'Zoom in',
   zoomOutLabel: 'Zoom out',
   imageLoadErrorMessage: 'This image failed to load',
+
+  // Custom
   loader: undefined,
   footer: undefined,
-  showTopBar: true,
+  showToolbar: true,
+
+  // Class names
+  outerClassName: undefined,
+  toolbarClassName: undefined,
+  innerClassName: undefined,
+  footerClassName: undefined,
 };
 
 export default ReactImageLightbox;
