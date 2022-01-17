@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.1.0](https://github.com/TopSoft4U/react-image-lightbox/compare/v6.0.2...v6.1.0) (2022-01-17)
+
 ### [6.0.2](https://github.com/TopSoft4U/react-image-lightbox/compare/v6.0.1...v6.0.2) (2022-01-17)
 
 ### [6.0.1](https://github.com/TopSoft4U/react-image-lightbox/compare/v5.1.4...v6.0.1) (2022-01-17)
