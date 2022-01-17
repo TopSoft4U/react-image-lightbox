@@ -1,6 +1,5 @@
 import { mount } from 'enzyme';
 import React from 'react';
-import Modal from 'react-modal';
 import Lightbox from '../index';
 import { translate, getHighestSafeWindowContext } from '../util';
 import {
@@ -26,10 +25,6 @@ const extendedCommonProps = {
 
 describe('Lightbox structure', () => {
   const wrapper = mount(<Lightbox {...commonProps} />);
-
-  it('contains react-modal', () => {
-    expect(wrapper.find(Modal).length).toEqual(1);
-  });
 
   it('does not contain prev button when no prevSrc supplied', () => {
     expect(wrapper.find('.ril-prev-button').length).toEqual(0);
@@ -60,13 +55,23 @@ describe('Lightbox structure', () => {
     expect(wrapper.find('button.ril-zoom-in').length).toEqual(0);
   });
 
-  it('does not contain a bottom bar bar when no footer prop is empty', () => {
+  it('does not contain a bottom bar when no footer prop is empty', () => {
     expect(wrapper.find('.ril-bottom-bar').length).toEqual(0);
   });
 
   it('contains a bottom bar when a footer prop is supplied', () => {
     wrapper.setProps({ footer: <div>test</div> });
     expect(wrapper.find('.ril-bottom-bar').length).toEqual(1);
+  });
+
+  it('contains a top bar when showTopBar is true (default)', () => {
+    expect(wrapper.find('.ril-toolbar').length).toEqual(1);
+  });
+
+  it('does not contain a top bar when showTopBar is set to false', () => {
+    wrapper.setProps({ showTopBar: false });
+    expect(wrapper.find('.ril-toolbar').length).toEqual(0);
+    wrapper.setProps({ showTopBar: true });
   });
 
   it('contains custom toolbar buttons when supplied', () => {
@@ -114,7 +119,6 @@ describe('Events', () => {
   });
 
   const mockFns = {
-    onAfterOpen: jest.fn(),
     onCloseRequest: jest.fn(),
     onMovePrevRequest: jest.fn(),
     onMoveNextRequest: jest.fn(),
@@ -130,16 +134,6 @@ describe('Events', () => {
   const { zoomOutBtn, zoomInBtn } = wrapper.instance();
   jest.spyOn(zoomOutBtn.current, 'focus');
   jest.spyOn(zoomInBtn.current, 'focus');
-
-  it('Calls onAfterOpen when mounted', async () => {
-    // Rough way to wait for react-modal to call its onAfterOpen,
-    // which is delayed by a requestAnimationFrame:
-    // https://github.com/reactjs/react-modal/blob/fb6bab5e7/src/components/ModalPortal.js#L226-L230
-    await new Promise(resolve => setTimeout(resolve));
-
-    expect(mockFns.onAfterOpen).toHaveBeenCalledTimes(1);
-    expect(mockFns.onAfterOpen).toHaveBeenCalledWith();
-  });
 
   it('Calls onMovePrevRequest when left button clicked', () => {
     expect(mockFns.onMovePrevRequest).toHaveBeenCalledTimes(0);
@@ -264,12 +258,7 @@ describe('Key bindings', () => {
 
 describe('Snapshot Testing', () => {
   it('Lightbox renders properly"', () => {
-    const wrapper = mount(
-      <Lightbox
-        {...commonProps}
-        reactModalProps={{ appElement: global.document.createElement('div') }}
-      />
-    );
+    const wrapper = mount(<Lightbox {...commonProps} />);
     expect(wrapper).toMatchSnapshot();
   });
 });

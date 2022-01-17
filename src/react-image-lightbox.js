@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Modal from 'react-modal';
 import classNames from 'classnames';
 import {
   getHighestSafeWindowContext,
@@ -115,7 +114,6 @@ class ReactImageLightbox extends Component {
     this.zoomOutBtn = React.createRef();
     this.caption = React.createRef();
 
-    this.closeIfClickInner = this.closeIfClickInner.bind(this);
     this.handleImageDoubleClick = this.handleImageDoubleClick.bind(this);
     this.handleImageMouseWheel = this.handleImageMouseWheel.bind(this);
     this.handleKeyInput = this.handleKeyInput.bind(this);
@@ -146,10 +144,6 @@ class ReactImageLightbox extends Component {
 
     // Empty pointers list
     this.pointerList = [];
-
-    // Prevent inner close
-    this.preventInnerClose = false;
-    this.preventInnerCloseTimeout = null;
 
     // Used to disable animation when changing props.mainSrc|nextSrc|prevSrc
     this.keyPressed = false;
@@ -271,17 +265,6 @@ class ReactImageLightbox extends Component {
     }, time);
     this.timeouts.push(id);
     return id;
-  }
-
-  setPreventInnerClose() {
-    if (this.preventInnerCloseTimeout) {
-      this.clearTimeout(this.preventInnerCloseTimeout);
-    }
-    this.preventInnerClose = true;
-    this.preventInnerCloseTimeout = this.setTimeout(() => {
-      this.preventInnerClose = false;
-      this.preventInnerCloseTimeout = null;
-    }, 100);
   }
 
   // Get info for the best suited image to display with the given srcType
@@ -531,15 +514,6 @@ class ReactImageLightbox extends Component {
       offsetX: nextOffsetX,
       offsetY: nextOffsetY,
     });
-  }
-
-  closeIfClickInner(event) {
-    if (
-      !this.preventInnerClose &&
-      event.target.className.search(/\bril-inner\b/) > -1
-    ) {
-      this.requestClose(event);
-    }
   }
 
   /**
@@ -863,7 +837,6 @@ class ReactImageLightbox extends Component {
 
   multiPointerEnd(event) {
     if (this.currentAction !== ACTION_NONE) {
-      this.setPreventInnerClose();
       this.handleEnd(event);
     }
     switch (this.pointerList.length) {
@@ -1263,20 +1236,16 @@ class ReactImageLightbox extends Component {
     const {
       animationDisabled,
       animationDuration,
-      clickOutsideToClose,
       discourageDownloads,
       enableZoom,
       imageTitle,
       nextSrc,
       prevSrc,
       toolbarButtons,
-      reactModalStyle,
-      onAfterOpen,
       imageCrossOrigin,
-      reactModalProps,
       loader,
-      children,
       footer,
+      showTopBar,
     } = this.props;
     const {
       zoomLevel,
@@ -1428,72 +1397,32 @@ class ReactImageLightbox extends Component {
       x: -1 * boxSize.width,
     });
 
-    const modalStyle = {
-      overlay: {
-        zIndex: 1000,
-        backgroundColor: 'transparent',
-        ...reactModalStyle.overlay, // Allow style overrides via props
-      },
-      content: {
-        backgroundColor: 'transparent',
-        overflow: 'hidden', // Needed, otherwise keyboard shortcuts scroll the page
-        border: 'none',
-        borderRadius: 0,
-        padding: 0,
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        ...reactModalStyle.content, // Allow style overrides via props
-      },
-    };
-
     return (
-      <Modal
-        isOpen
-        onRequestClose={clickOutsideToClose ? this.requestClose : undefined}
-        onAfterOpen={() => {
-          // Focus on the div with key handlers
-          if (this.outerEl.current) {
-            this.outerEl.current.focus();
-          }
-
-          onAfterOpen();
+      <div // eslint-disable-line jsx-a11y/no-static-element-interactions
+        className={classNames(
+          'ril-outer',
+          'ril-outer-animating',
+          {
+            'ril-outer-closing': isClosing,
+          },
+          this.props.wrapperClassName
+        )}
+        style={{
+          transition: `opacity ${animationDuration}ms`,
+          animationDuration: `${animationDuration}ms`,
+          animationDirection: isClosing ? 'normal' : 'reverse',
         }}
-        style={modalStyle}
-        contentLabel={translate('Lightbox')}
-        appElement={
-          typeof global.window !== 'undefined'
-            ? global.window.document.body
-            : undefined
-        }
-        {...reactModalProps}
+        ref={this.outerEl}
+        onWheel={this.handleOuterMousewheel}
+        onMouseMove={this.handleMouseMove}
+        onMouseDown={this.handleMouseDown}
+        onTouchStart={this.handleTouchStart}
+        onTouchMove={this.handleTouchMove}
+        tabIndex="-1" // Enables key handlers on div
+        onKeyDown={this.handleKeyInput}
+        onKeyUp={this.handleKeyInput}
       >
-        <div // eslint-disable-line jsx-a11y/no-static-element-interactions
-          // Floating modal with closing animations
-          className={classNames(
-            'ril-outer',
-            'ril-outer-animating',
-            {
-              'ril-outer-closing': isClosing,
-            },
-            this.props.wrapperClassName
-          )}
-          style={{
-            transition: `opacity ${animationDuration}ms`,
-            animationDuration: `${animationDuration}ms`,
-            animationDirection: isClosing ? 'normal' : 'reverse',
-          }}
-          ref={this.outerEl}
-          onWheel={this.handleOuterMousewheel}
-          onMouseMove={this.handleMouseMove}
-          onMouseDown={this.handleMouseDown}
-          onTouchStart={this.handleTouchStart}
-          onTouchMove={this.handleTouchMove}
-          tabIndex="-1" // Enables key handlers on div
-          onKeyDown={this.handleKeyInput}
-          onKeyUp={this.handleKeyInput}
-        >
+        {showTopBar && (
           <div className="ril-toolbar">
             <ul className="ril-toolbar-side ril-toolbar-left">
               <li className="ril-toolbar-item">
@@ -1540,42 +1469,34 @@ class ReactImageLightbox extends Component {
               />
             </ul>
           </div>
+        )}
 
-          <div // eslint-disable-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
-            // Image holder
-            className="ril-inner"
-            onClick={clickOutsideToClose ? this.closeIfClickInner : undefined}
-          >
-            {images}
-          </div>
+        <div className="ril-inner">{images}</div>
 
-          {prevSrc && (
-            <button // Move to previous image button
-              type="button"
-              className="ril-nav-buttons ril-prev-button"
-              key="prev"
-              aria-label={this.props.prevLabel}
-              title={this.props.prevLabel}
-              onClick={!this.isAnimating() ? this.requestMovePrev : undefined} // Ignore clicks during animation
-            />
-          )}
+        {prevSrc && (
+          <button // Move to previous image button
+            type="button"
+            className="ril-nav-buttons ril-prev-button"
+            key="prev"
+            aria-label={this.props.prevLabel}
+            title={this.props.prevLabel}
+            onClick={!this.isAnimating() ? this.requestMovePrev : undefined} // Ignore clicks during animation
+          />
+        )}
 
-          {nextSrc && (
-            <button // Move to next image button
-              type="button"
-              className="ril-nav-buttons ril-next-button"
-              key="next"
-              aria-label={this.props.nextLabel}
-              title={this.props.nextLabel}
-              onClick={!this.isAnimating() ? this.requestMoveNext : undefined} // Ignore clicks during animation
-            />
-          )}
+        {nextSrc && (
+          <button // Move to next image button
+            type="button"
+            className="ril-nav-buttons ril-next-button"
+            key="next"
+            aria-label={this.props.nextLabel}
+            title={this.props.nextLabel}
+            onClick={!this.isAnimating() ? this.requestMoveNext : undefined} // Ignore clicks during animation
+          />
+        )}
 
-          {footer && <div className="ril-bottom-bar">{footer}</div>}
-        </div>
-
-        {children}
-      </Modal>
+        {footer && <div className="ril-bottom-bar">{footer}</div>}
+      </div>
     );
   }
 }
@@ -1634,9 +1555,6 @@ ReactImageLightbox.propTypes = {
   // Called when image successfully loads
   onImageLoad: PropTypes.func,
 
-  // Open window event
-  onAfterOpen: PropTypes.func,
-
   //-----------------------------
   // Download discouragement settings
   //-----------------------------
@@ -1683,9 +1601,6 @@ ReactImageLightbox.propTypes = {
   // Lightbox style
   //-----------------------------
 
-  // Set z-index style, etc., for the parent react-modal (format: https://github.com/reactjs/react-modal#styles )
-  reactModalStyle: PropTypes.shape({}),
-
   // Padding (px) between the edge of the window and the lightbox
   imagePadding: PropTypes.number,
 
@@ -1704,9 +1619,6 @@ ReactImageLightbox.propTypes = {
   // Set to false to disable zoom functionality and hide zoom buttons
   enableZoom: PropTypes.bool,
 
-  // Override props set on react-modal (https://github.com/reactjs/react-modal)
-  reactModalProps: PropTypes.shape({}),
-
   // Aria-labels
   nextLabel: PropTypes.string,
   prevLabel: PropTypes.string,
@@ -1720,14 +1632,13 @@ ReactImageLightbox.propTypes = {
   loader: PropTypes.node,
 
   // New props - custom
-  children: PropTypes.node,
   footer: PropTypes.node,
+  showTopBar: PropTypes.bool,
 };
 
 ReactImageLightbox.defaultProps = {
   imageTitle: null,
   toolbarButtons: null,
-  reactModalProps: {},
   animationDisabled: false,
   animationDuration: 300,
   animationOnKeyInput: false,
@@ -1743,7 +1654,6 @@ ReactImageLightbox.defaultProps = {
   nextLabel: 'Next image',
   nextSrc: null,
   nextSrcThumbnail: null,
-  onAfterOpen: () => {},
   onImageLoadError: () => {},
   onImageLoad: () => {},
   onMoveNextRequest: () => {},
@@ -1751,14 +1661,13 @@ ReactImageLightbox.defaultProps = {
   prevLabel: 'Previous image',
   prevSrc: null,
   prevSrcThumbnail: null,
-  reactModalStyle: {},
   wrapperClassName: '',
   zoomInLabel: 'Zoom in',
   zoomOutLabel: 'Zoom out',
   imageLoadErrorMessage: 'This image failed to load',
   loader: undefined,
-  children: undefined,
   footer: undefined,
+  showTopBar: true,
 };
 
 export default ReactImageLightbox;

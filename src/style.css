@@ -334,6 +334,7 @@
 
 .ril-inner {
   flex: 1;
+  position: relative;
 }
 
 .ril-toolbar,

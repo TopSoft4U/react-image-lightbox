@@ -13,7 +13,6 @@ export interface ILightBoxProps {
   onImageLoad?(): void;
   onImageLoadError?(): void;
   imageLoadErrorMessage?: React.ReactNode;
-  onAfterOpen?(): void;
   index?: number;
   length?: number;
   onIndicatorClick?: (index: number) => void;
@@ -26,10 +25,7 @@ export interface ILightBoxProps {
   imageTitle?: React.ReactNode | string;
   imageCrossOrigin?: string;
   toolbarButtons?: React.ReactNode[];
-  reactModalStyle?: any;
-  reactModalProps?: any;
   imagePadding?: number;
-  clickOutsideToClose?: boolean;
   enableZoom?: boolean;
   wrapperClassName?: string;
   nextLabel?: string;
@@ -38,7 +34,7 @@ export interface ILightBoxProps {
   zoomOutLabel?: string;
   closeLabel?: string;
   footer?: React.ReactNode;
-  children?: React.ReactNode;
+  showTopBar?: boolean;
 }
 
 export default class Lightbox extends React.Component<ILightBoxProps, never> {}

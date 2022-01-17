@@ -20,7 +20,6 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
   nextLabel="Next image"
   nextSrc={null}
   nextSrcThumbnail={null}
-  onAfterOpen={[Function]}
   onCloseRequest={[Function]}
   onImageLoad={[Function]}
   onImageLoadError={[Function]}
@@ -29,481 +28,181 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
   prevLabel="Previous image"
   prevSrc={null}
   prevSrcThumbnail={null}
-  reactModalProps={
-    Object {
-      "appElement": <div
-        aria-hidden="true"
-      />,
-    }
-  }
-  reactModalStyle={Object {}}
+  showTopBar={true}
   toolbarButtons={null}
   wrapperClassName=""
   zoomInLabel="Zoom in"
   zoomOutLabel="Zoom out"
 >
-  <Modal
-    appElement={
-      <div
-        aria-hidden="true"
-      />
-    }
-    ariaHideApp={true}
-    bodyOpenClassName="ReactModal__Body--open"
-    closeTimeoutMS={0}
-    contentElement={[Function]}
-    contentLabel="Lightbox"
-    isOpen={true}
-    onAfterOpen={[Function]}
-    onRequestClose={[Function]}
-    overlayElement={[Function]}
-    parentSelector={[Function]}
-    portalClassName="ReactModalPortal"
-    preventScroll={false}
-    role="dialog"
-    shouldCloseOnEsc={true}
-    shouldCloseOnOverlayClick={true}
-    shouldFocusAfterRender={true}
-    shouldReturnFocusAfterClose={true}
+  <div
+    className="ril-outer ril-outer-animating"
+    onKeyDown={[Function]}
+    onKeyUp={[Function]}
+    onMouseDown={[Function]}
+    onMouseMove={[Function]}
+    onTouchMove={[Function]}
+    onTouchStart={[Function]}
+    onWheel={[Function]}
     style={
       Object {
-        "content": Object {
-          "backgroundColor": "transparent",
-          "border": "none",
-          "borderRadius": 0,
-          "bottom": 0,
-          "left": 0,
-          "overflow": "hidden",
-          "padding": 0,
-          "right": 0,
-          "top": 0,
-        },
-        "overlay": Object {
-          "backgroundColor": "transparent",
-          "zIndex": 1000,
-        },
+        "animationDirection": "reverse",
+        "animationDuration": "300ms",
+        "transition": "opacity 300ms",
       }
     }
+    tabIndex="-1"
   >
-    <Portal
-      containerInfo={
-        <div
-          class="ReactModalPortal"
-        >
-          <div
-            class="ReactModal__Overlay"
-            style="position: fixed; top: 0px; left: 0px; right: 0px; bottom: 0px; background-color: transparent; z-index: 1000;"
-          >
-            <div
-              aria-label="Lightbox"
-              aria-modal="true"
-              class="ReactModal__Content"
-              role="dialog"
-              style="position: absolute; top: 0px; left: 0px; right: 0px; bottom: 0px; background: rgb(255, 255, 255); overflow: hidden; border-radius: 0; outline: none; padding: 0px; background-color: transparent;"
-              tabindex="-1"
-            >
-              <div
-                class="ril-outer ril-outer-animating"
-                style="transition: opacity 300ms; animation-duration: 300ms; animation-direction: reverse;"
-                tabindex="-1"
-              >
-                <div
-                  class="ril-toolbar"
-                >
-                  <ul
-                    class="ril-toolbar-side ril-toolbar-left"
-                  >
-                    <li
-                      class="ril-toolbar-item"
-                    >
-                      <span
-                        class="ril-toolbar-item-child"
-                      />
-                    </li>
-                  </ul>
-                  <ul
-                    class="ril-toolbar-side ril-toolbar-right"
-                  >
-                    <li
-                      class="ril-toolbar-item"
-                    >
-                      <button
-                        aria-label="Zoom in"
-                        class="ril-toolbar-item-child ril-builtin-btn ril-zoom-in"
-                        title="Zoom in"
-                        type="button"
-                      />
-                    </li>
-                    <li
-                      class="ril-toolbar-item"
-                    >
-                      <button
-                        aria-label="Zoom out"
-                        class="ril-toolbar-item-child ril-builtin-btn ril-zoom-out ril-builtin-btn-disabled"
-                        disabled=""
-                        title="Zoom out"
-                        type="button"
-                      />
-                    </li>
-                    <li
-                      class="ril-toolbar-item"
-                    >
-                      <button
-                        aria-label="Close lightbox"
-                        class="ril-toolbar-item-child ril-builtin-btn ril-close"
-                        title="Close lightbox"
-                        type="button"
-                      />
-                    </li>
-                  </ul>
-                </div>
-                <div
-                  class="ril-inner"
-                >
-                  <div
-                    class="ril-image ril-not-loaded ril-image-current"
-                    style="transform: translate3d(0px,0px,0) scale3d(NaN,NaN,1);"
-                  >
-                    <div
-                      class="ril-loading-container"
-                    >
-                      <div
-                        class="ril-loading-circle ril-loading-container-icon"
-                      >
-                        <div
-                          class="ril-loading-circle-point"
-                        />
-                        <div
-                          class="ril-loading-circle-point"
-                        />
-                        <div
-                          class="ril-loading-circle-point"
-                        />
-                        <div
-                          class="ril-loading-circle-point"
-                        />
-                        <div
-                          class="ril-loading-circle-point"
-                        />
-                        <div
-                          class="ril-loading-circle-point"
-                        />
-                        <div
-                          class="ril-loading-circle-point"
-                        />
-                        <div
-                          class="ril-loading-circle-point"
-                        />
-                        <div
-                          class="ril-loading-circle-point"
-                        />
-                        <div
-                          class="ril-loading-circle-point"
-                        />
-                        <div
-                          class="ril-loading-circle-point"
-                        />
-                        <div
-                          class="ril-loading-circle-point"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      }
+    <div
+      className="ril-toolbar"
     >
-      <ModalPortal
-        appElement={
-          <div
-            aria-hidden="true"
+      <ul
+        className="ril-toolbar-side ril-toolbar-left"
+      >
+        <li
+          className="ril-toolbar-item"
+        >
+          <span
+            className="ril-toolbar-item-child"
           />
-        }
-        ariaHideApp={true}
-        bodyOpenClassName="ReactModal__Body--open"
-        closeTimeoutMS={0}
-        contentElement={[Function]}
-        contentLabel="Lightbox"
-        defaultStyles={
-          Object {
-            "content": Object {
-              "WebkitOverflowScrolling": "touch",
-              "background": "#fff",
-              "border": "1px solid #ccc",
-              "borderRadius": "4px",
-              "bottom": "40px",
-              "left": "40px",
-              "outline": "none",
-              "overflow": "auto",
-              "padding": "20px",
-              "position": "absolute",
-              "right": "40px",
-              "top": "40px",
-            },
-            "overlay": Object {
-              "backgroundColor": "rgba(255, 255, 255, 0.75)",
-              "bottom": 0,
-              "left": 0,
-              "position": "fixed",
-              "right": 0,
-              "top": 0,
-            },
-          }
-        }
-        isOpen={true}
-        onAfterOpen={[Function]}
-        onRequestClose={[Function]}
-        overlayElement={[Function]}
-        parentSelector={[Function]}
-        portalClassName="ReactModalPortal"
-        preventScroll={false}
-        role="dialog"
-        shouldCloseOnEsc={true}
-        shouldCloseOnOverlayClick={true}
-        shouldFocusAfterRender={true}
-        shouldReturnFocusAfterClose={true}
+        </li>
+      </ul>
+      <ul
+        className="ril-toolbar-side ril-toolbar-right"
+      >
+        <ForwardRef
+          className="ril-zoom-in"
+          disabled={false}
+          key="zoom-in"
+          label="Zoom in"
+          onClick={[Function]}
+        >
+          <li
+            className="ril-toolbar-item"
+          >
+            <button
+              aria-label="Zoom in"
+              className="ril-toolbar-item-child ril-builtin-btn ril-zoom-in"
+              disabled={false}
+              key="close"
+              onClick={[Function]}
+              title="Zoom in"
+              type="button"
+            />
+          </li>
+        </ForwardRef>
+        <ForwardRef
+          className="ril-zoom-out"
+          disabled={true}
+          key="zoom-out"
+          label="Zoom out"
+          onClick={[Function]}
+        >
+          <li
+            className="ril-toolbar-item"
+          >
+            <button
+              aria-label="Zoom out"
+              className="ril-toolbar-item-child ril-builtin-btn ril-zoom-out ril-builtin-btn-disabled"
+              disabled={true}
+              key="close"
+              title="Zoom out"
+              type="button"
+            />
+          </li>
+        </ForwardRef>
+        <ForwardRef
+          className="ril-close"
+          disabled={false}
+          key="close"
+          label="Close lightbox"
+          onClick={[Function]}
+        >
+          <li
+            className="ril-toolbar-item"
+          >
+            <button
+              aria-label="Close lightbox"
+              className="ril-toolbar-item-child ril-builtin-btn ril-close"
+              disabled={false}
+              key="close"
+              onClick={[Function]}
+              title="Close lightbox"
+              type="button"
+            />
+          </li>
+        </ForwardRef>
+      </ul>
+    </div>
+    <div
+      className="ril-inner"
+    >
+      <div
+        className="ril-image ril-not-loaded ril-image-current"
+        key="/fake/image/src.jpgi0"
         style={
           Object {
-            "content": Object {
-              "backgroundColor": "transparent",
-              "border": "none",
-              "borderRadius": 0,
-              "bottom": 0,
-              "left": 0,
-              "overflow": "hidden",
-              "padding": 0,
-              "right": 0,
-              "top": 0,
-            },
-            "overlay": Object {
-              "backgroundColor": "transparent",
-              "zIndex": 1000,
-            },
+            "transform": "translate3d(0px,0px,0) scale3d(NaN,NaN,1)",
           }
         }
       >
         <div
-          className="ReactModal__Overlay"
-          onClick={[Function]}
-          onMouseDown={[Function]}
-          style={
-            Object {
-              "backgroundColor": "transparent",
-              "bottom": 0,
-              "left": 0,
-              "position": "fixed",
-              "right": 0,
-              "top": 0,
-              "zIndex": 1000,
-            }
-          }
+          className="ril-loading-container"
         >
           <div
-            aria-label="Lightbox"
-            aria-modal={true}
-            className="ReactModal__Content"
-            onClick={[Function]}
-            onKeyDown={[Function]}
-            onMouseDown={[Function]}
-            onMouseUp={[Function]}
-            role="dialog"
-            style={
-              Object {
-                "WebkitOverflowScrolling": "touch",
-                "background": "#fff",
-                "backgroundColor": "transparent",
-                "border": "none",
-                "borderRadius": 0,
-                "bottom": 0,
-                "left": 0,
-                "outline": "none",
-                "overflow": "hidden",
-                "padding": 0,
-                "position": "absolute",
-                "right": 0,
-                "top": 0,
-              }
-            }
-            tabIndex="-1"
+            className="ril-loading-circle ril-loading-container-icon"
           >
             <div
-              className="ril-outer ril-outer-animating"
-              onKeyDown={[Function]}
-              onKeyUp={[Function]}
-              onMouseDown={[Function]}
-              onMouseMove={[Function]}
-              onTouchMove={[Function]}
-              onTouchStart={[Function]}
-              onWheel={[Function]}
-              style={
-                Object {
-                  "animationDirection": "reverse",
-                  "animationDuration": "300ms",
-                  "transition": "opacity 300ms",
-                }
-              }
-              tabIndex="-1"
-            >
-              <div
-                className="ril-toolbar"
-              >
-                <ul
-                  className="ril-toolbar-side ril-toolbar-left"
-                >
-                  <li
-                    className="ril-toolbar-item"
-                  >
-                    <span
-                      className="ril-toolbar-item-child"
-                    />
-                  </li>
-                </ul>
-                <ul
-                  className="ril-toolbar-side ril-toolbar-right"
-                >
-                  <ForwardRef
-                    className="ril-zoom-in"
-                    disabled={false}
-                    key="zoom-in"
-                    label="Zoom in"
-                    onClick={[Function]}
-                  >
-                    <li
-                      className="ril-toolbar-item"
-                    >
-                      <button
-                        aria-label="Zoom in"
-                        className="ril-toolbar-item-child ril-builtin-btn ril-zoom-in"
-                        disabled={false}
-                        key="close"
-                        onClick={[Function]}
-                        title="Zoom in"
-                        type="button"
-                      />
-                    </li>
-                  </ForwardRef>
-                  <ForwardRef
-                    className="ril-zoom-out"
-                    disabled={true}
-                    key="zoom-out"
-                    label="Zoom out"
-                    onClick={[Function]}
-                  >
-                    <li
-                      className="ril-toolbar-item"
-                    >
-                      <button
-                        aria-label="Zoom out"
-                        className="ril-toolbar-item-child ril-builtin-btn ril-zoom-out ril-builtin-btn-disabled"
-                        disabled={true}
-                        key="close"
-                        title="Zoom out"
-                        type="button"
-                      />
-                    </li>
-                  </ForwardRef>
-                  <ForwardRef
-                    className="ril-close"
-                    disabled={false}
-                    key="close"
-                    label="Close lightbox"
-                    onClick={[Function]}
-                  >
-                    <li
-                      className="ril-toolbar-item"
-                    >
-                      <button
-                        aria-label="Close lightbox"
-                        className="ril-toolbar-item-child ril-builtin-btn ril-close"
-                        disabled={false}
-                        key="close"
-                        onClick={[Function]}
-                        title="Close lightbox"
-                        type="button"
-                      />
-                    </li>
-                  </ForwardRef>
-                </ul>
-              </div>
-              <div
-                className="ril-inner"
-                onClick={[Function]}
-              >
-                <div
-                  className="ril-image ril-not-loaded ril-image-current"
-                  key="/fake/image/src.jpgi0"
-                  style={
-                    Object {
-                      "transform": "translate3d(0px,0px,0) scale3d(NaN,NaN,1)",
-                    }
-                  }
-                >
-                  <div
-                    className="ril-loading-container"
-                  >
-                    <div
-                      className="ril-loading-circle ril-loading-container-icon"
-                    >
-                      <div
-                        className="ril-loading-circle-point"
-                        key="0"
-                      />
-                      <div
-                        className="ril-loading-circle-point"
-                        key="1"
-                      />
-                      <div
-                        className="ril-loading-circle-point"
-                        key="2"
-                      />
-                      <div
-                        className="ril-loading-circle-point"
-                        key="3"
-                      />
-                      <div
-                        className="ril-loading-circle-point"
-                        key="4"
-                      />
-                      <div
-                        className="ril-loading-circle-point"
-                        key="5"
-                      />
-                      <div
-                        className="ril-loading-circle-point"
-                        key="6"
-                      />
-                      <div
-                        className="ril-loading-circle-point"
-                        key="7"
-                      />
-                      <div
-                        className="ril-loading-circle-point"
-                        key="8"
-                      />
-                      <div
-                        className="ril-loading-circle-point"
-                        key="9"
-                      />
-                      <div
-                        className="ril-loading-circle-point"
-                        key="10"
-                      />
-                      <div
-                        className="ril-loading-circle-point"
-                        key="11"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+              className="ril-loading-circle-point"
+              key="0"
+            />
+            <div
+              className="ril-loading-circle-point"
+              key="1"
+            />
+            <div
+              className="ril-loading-circle-point"
+              key="2"
+            />
+            <div
+              className="ril-loading-circle-point"
+              key="3"
+            />
+            <div
+              className="ril-loading-circle-point"
+              key="4"
+            />
+            <div
+              className="ril-loading-circle-point"
+              key="5"
+            />
+            <div
+              className="ril-loading-circle-point"
+              key="6"
+            />
+            <div
+              className="ril-loading-circle-point"
+              key="7"
+            />
+            <div
+              className="ril-loading-circle-point"
+              key="8"
+            />
+            <div
+              className="ril-loading-circle-point"
+              key="9"
+            />
+            <div
+              className="ril-loading-circle-point"
+              key="10"
+            />
+            <div
+              className="ril-loading-circle-point"
+              key="11"
+            />
           </div>
         </div>
-      </ModalPortal>
-    </Portal>
-  </Modal>
+      </div>
+    </div>
+  </div>
 </ReactImageLightbox>
 `;
