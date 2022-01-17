@@ -9,7 +9,6 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
   closeLabel="Close lightbox"
   discourageDownloads={false}
   enableZoom={true}
-  imageCaption={null}
   imageCrossOrigin={null}
   imageLoadErrorMessage="This image failed to load"
   imagePadding={10}
@@ -109,6 +108,56 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
                 tabindex="-1"
               >
                 <div
+                  class="ril-toolbar"
+                >
+                  <ul
+                    class="ril-toolbar-side ril-toolbar-left"
+                  >
+                    <li
+                      class="ril-toolbar-item"
+                    >
+                      <span
+                        class="ril-toolbar-item-child"
+                      />
+                    </li>
+                  </ul>
+                  <ul
+                    class="ril-toolbar-side ril-toolbar-right"
+                  >
+                    <li
+                      class="ril-toolbar-item"
+                    >
+                      <button
+                        aria-label="Zoom in"
+                        class="ril-toolbar-item-child ril-builtin-btn ril-zoom-in"
+                        title="Zoom in"
+                        type="button"
+                      />
+                    </li>
+                    <li
+                      class="ril-toolbar-item"
+                    >
+                      <button
+                        aria-label="Zoom out"
+                        class="ril-toolbar-item-child ril-builtin-btn ril-zoom-out ril-builtin-btn-disabled"
+                        disabled=""
+                        title="Zoom out"
+                        type="button"
+                      />
+                    </li>
+                    <li
+                      class="ril-toolbar-item"
+                    >
+                      <button
+                        aria-label="Close lightbox"
+                        class="ril-toolbar-item-child ril-builtin-btn ril-close"
+                        title="Close lightbox"
+                        type="button"
+                      />
+                    </li>
+                  </ul>
+                </div>
+                <div
                   class="ril-inner"
                 >
                   <div
@@ -160,56 +209,6 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
                       </div>
                     </div>
                   </div>
-                </div>
-                <div
-                  class="ril-toolbar"
-                >
-                  <ul
-                    class="ril-toolbar-side ril-toolbar-left"
-                  >
-                    <li
-                      class="ril-toolbar-item"
-                    >
-                      <span
-                        class="ril-toolbar-item-child"
-                      />
-                    </li>
-                  </ul>
-                  <ul
-                    class="ril-toolbar-side ril-toolbar-right"
-                  >
-                    <li
-                      class="ril-toolbar-item"
-                    >
-                      <button
-                        aria-label="Zoom in"
-                        class="ril-toolbar-item-child ril-builtin-btn ril-zoom-in"
-                        title="Zoom in"
-                        type="button"
-                      />
-                    </li>
-                    <li
-                      class="ril-toolbar-item"
-                    >
-                      <button
-                        aria-label="Zoom out"
-                        class="ril-toolbar-item-child ril-builtin-btn ril-zoom-out ril-builtin-btn-disabled"
-                        disabled=""
-                        title="Zoom out"
-                        type="button"
-                      />
-                    </li>
-                    <li
-                      class="ril-toolbar-item"
-                    >
-                      <button
-                        aria-label="Close lightbox"
-                        class="ril-toolbar-item-child ril-builtin-btn ril-close"
-                        title="Close lightbox"
-                        type="button"
-                      />
-                    </li>
-                  </ul>
                 </div>
               </div>
             </div>
@@ -349,77 +348,6 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
               tabIndex="-1"
             >
               <div
-                className="ril-inner"
-                onClick={[Function]}
-              >
-                <div
-                  className="ril-image ril-not-loaded ril-image-current"
-                  key="/fake/image/src.jpgi0"
-                  style={
-                    Object {
-                      "transform": "translate3d(0px,0px,0) scale3d(NaN,NaN,1)",
-                    }
-                  }
-                >
-                  <div
-                    className="ril-loading-container"
-                  >
-                    <div
-                      className="ril-loading-circle ril-loading-container-icon"
-                    >
-                      <div
-                        className="ril-loading-circle-point"
-                        key="0"
-                      />
-                      <div
-                        className="ril-loading-circle-point"
-                        key="1"
-                      />
-                      <div
-                        className="ril-loading-circle-point"
-                        key="2"
-                      />
-                      <div
-                        className="ril-loading-circle-point"
-                        key="3"
-                      />
-                      <div
-                        className="ril-loading-circle-point"
-                        key="4"
-                      />
-                      <div
-                        className="ril-loading-circle-point"
-                        key="5"
-                      />
-                      <div
-                        className="ril-loading-circle-point"
-                        key="6"
-                      />
-                      <div
-                        className="ril-loading-circle-point"
-                        key="7"
-                      />
-                      <div
-                        className="ril-loading-circle-point"
-                        key="8"
-                      />
-                      <div
-                        className="ril-loading-circle-point"
-                        key="9"
-                      />
-                      <div
-                        className="ril-loading-circle-point"
-                        key="10"
-                      />
-                      <div
-                        className="ril-loading-circle-point"
-                        key="11"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
                 className="ril-toolbar"
               >
                 <ul
@@ -499,6 +427,77 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
                     </li>
                   </ForwardRef>
                 </ul>
+              </div>
+              <div
+                className="ril-inner"
+                onClick={[Function]}
+              >
+                <div
+                  className="ril-image ril-not-loaded ril-image-current"
+                  key="/fake/image/src.jpgi0"
+                  style={
+                    Object {
+                      "transform": "translate3d(0px,0px,0) scale3d(NaN,NaN,1)",
+                    }
+                  }
+                >
+                  <div
+                    className="ril-loading-container"
+                  >
+                    <div
+                      className="ril-loading-circle ril-loading-container-icon"
+                    >
+                      <div
+                        className="ril-loading-circle-point"
+                        key="0"
+                      />
+                      <div
+                        className="ril-loading-circle-point"
+                        key="1"
+                      />
+                      <div
+                        className="ril-loading-circle-point"
+                        key="2"
+                      />
+                      <div
+                        className="ril-loading-circle-point"
+                        key="3"
+                      />
+                      <div
+                        className="ril-loading-circle-point"
+                        key="4"
+                      />
+                      <div
+                        className="ril-loading-circle-point"
+                        key="5"
+                      />
+                      <div
+                        className="ril-loading-circle-point"
+                        key="6"
+                      />
+                      <div
+                        className="ril-loading-circle-point"
+                        key="7"
+                      />
+                      <div
+                        className="ril-loading-circle-point"
+                        key="8"
+                      />
+                      <div
+                        className="ril-loading-circle-point"
+                        key="9"
+                      />
+                      <div
+                        className="ril-loading-circle-point"
+                        key="10"
+                      />
+                      <div
+                        className="ril-loading-circle-point"
+                        key="11"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

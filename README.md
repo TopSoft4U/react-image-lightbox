@@ -101,7 +101,6 @@ Play with the code on the [example on CodeSandbox](https://codesandbox.io/s/l9n3
 | keyRepeatLimit                  | number | Required interval of time (ms) between key actions (prevents excessively fast navigation of images). Defaults to `180`.                                       |
 | keyRepeatKeyupBonus             | number | Amount of time (ms) restored after each keyup (makes rapid key presses slightly faster than holding down the key to navigate images). Defaults to `40`.       |
 | imageTitle                      |  node  | Image title (Descriptive element above image)                                                                                                                 |
-| imageCaption                    |  node  | Image caption (Descriptive element below image)                                                                                                               |
 | imageCrossOrigin                | string | `crossorigin` attribute to append to `img` elements ([MDN documentation](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attr-crossorigin))     |
 | toolbarButtons                  | node[] | Array of custom toolbar buttons                                                                                                                               |
 | reactModalStyle                 | Object | Set `z-index` style, etc., for the parent react-modal ([react-modal style format](https://github.com/reactjs/react-modal#styles))                             |
@@ -116,15 +115,17 @@ Play with the code on the [example on CodeSandbox](https://codesandbox.io/s/l9n3
 | zoomOutLabel                    | string | `aria-label` and `title` set on the 'Zoom Out' button. Defaults to `'Zoom out'`.                                                                              |
 | closeLabel                      | string | `aria-label` and `title` set on the 'Close Lightbox' button. Defaults to `'Close lightbox'`.                                                                  |
 | loader                          |  node  | Custom Loading indicator for loading                                                                                                                          |
+| children                        |  node  | Content to appear below modal                                                                                                                                 |
+| footer                          |  node  | Content to appear in bottom part of modal                                                                                                                     |
 
 ## Browser Compatibility
 
-| Browser | Works? |
-| :------ | :----- |
-| Chrome  | Yes    |
-| Firefox | Yes    |
-| Safari  | Yes    |
-| IE 11   | Yes    |
+| Browser | Works?        |
+| :------ | :------------ |
+| Chrome  | Yes           |
+| Firefox | Yes           |
+| Safari  | Yes           |
+| IE 11   | Not supported |
 
 ## Contributing
 

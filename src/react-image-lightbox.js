@@ -346,7 +346,7 @@ class ReactImageLightbox extends Component {
 
   getMaxOffsets(zoomLevel = this.state.zoomLevel) {
     const currentImageInfo = this.getBestImageForType('mainSrc');
-    if (currentImageInfo === null) {
+    if (!currentImageInfo) {
       return { maxX: 0, minX: 0, maxY: 0, minY: 0 };
     }
 
@@ -467,7 +467,7 @@ class ReactImageLightbox extends Component {
     }
 
     const imageBaseSize = this.getBestImageForType('mainSrc');
-    if (imageBaseSize === null) {
+    if (!imageBaseSize) {
       return;
     }
 
@@ -1329,7 +1329,7 @@ class ReactImageLightbox extends Component {
         Object.keys(object).some(key => object[key]);
 
       // when error on one of the loads then push custom error stuff
-      if (bestImageInfo === null && hasTrueValue(loadErrorStatus)) {
+      if (!bestImageInfo && hasTrueValue(loadErrorStatus)) {
         images.push(
           <div
             className={classNames('ril-image', 'ril-errored', imageClass)}
@@ -1344,7 +1344,7 @@ class ReactImageLightbox extends Component {
 
         return;
       }
-      if (bestImageInfo === null) {
+      if (!bestImageInfo) {
         const loadingIcon =
           loader !== undefined ? (
             loader
@@ -1494,36 +1494,6 @@ class ReactImageLightbox extends Component {
           onKeyDown={this.handleKeyInput}
           onKeyUp={this.handleKeyInput}
         >
-          <div // eslint-disable-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
-            // Image holder
-            className="ril-inner"
-            onClick={clickOutsideToClose ? this.closeIfClickInner : undefined}
-          >
-            {images}
-          </div>
-
-          {prevSrc && (
-            <button // Move to previous image button
-              type="button"
-              className="ril-nav-buttons ril-prev-button"
-              key="prev"
-              aria-label={this.props.prevLabel}
-              title={this.props.prevLabel}
-              onClick={!this.isAnimating() ? this.requestMovePrev : undefined} // Ignore clicks during animation
-            />
-          )}
-
-          {nextSrc && (
-            <button // Move to next image button
-              type="button"
-              className="ril-nav-buttons ril-next-button"
-              key="next"
-              aria-label={this.props.nextLabel}
-              title={this.props.nextLabel}
-              onClick={!this.isAnimating() ? this.requestMoveNext : undefined} // Ignore clicks during animation
-            />
-          )}
-
           <div className="ril-toolbar">
             <ul className="ril-toolbar-side ril-toolbar-left">
               <li className="ril-toolbar-item">
@@ -1571,21 +1541,37 @@ class ReactImageLightbox extends Component {
             </ul>
           </div>
 
-          {footer && <div className="ril-footer">{footer}</div>}
+          <div // eslint-disable-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
+            // Image holder
+            className="ril-inner"
+            onClick={clickOutsideToClose ? this.closeIfClickInner : undefined}
+          >
+            {images}
+          </div>
 
-          {this.props.imageCaption && (
-            // eslint-disable-next-line jsx-a11y/no-static-element-interactions
-            <div
-              onWheel={this.handleCaptionMousewheel}
-              onMouseDown={event => event.stopPropagation()}
-              className="ril-caption"
-              ref={this.caption}
-            >
-              <div className="ril-caption-content">
-                {this.props.imageCaption}
-              </div>
-            </div>
+          {prevSrc && (
+            <button // Move to previous image button
+              type="button"
+              className="ril-nav-buttons ril-prev-button"
+              key="prev"
+              aria-label={this.props.prevLabel}
+              title={this.props.prevLabel}
+              onClick={!this.isAnimating() ? this.requestMovePrev : undefined} // Ignore clicks during animation
+            />
           )}
+
+          {nextSrc && (
+            <button // Move to next image button
+              type="button"
+              className="ril-nav-buttons ril-next-button"
+              key="next"
+              aria-label={this.props.nextLabel}
+              title={this.props.nextLabel}
+              onClick={!this.isAnimating() ? this.requestMoveNext : undefined} // Ignore clicks during animation
+            />
+          )}
+
+          {footer && <div className="ril-bottom-bar">{footer}</div>}
         </div>
 
         {children}
@@ -1690,9 +1676,6 @@ ReactImageLightbox.propTypes = {
   // Image title
   imageTitle: PropTypes.node,
 
-  // Image caption
-  imageCaption: PropTypes.node,
-
   // Optional crossOrigin attribute
   imageCrossOrigin: PropTypes.string,
 
@@ -1743,7 +1726,6 @@ ReactImageLightbox.propTypes = {
 
 ReactImageLightbox.defaultProps = {
   imageTitle: null,
-  imageCaption: null,
   toolbarButtons: null,
   reactModalProps: {},
   animationDisabled: false,

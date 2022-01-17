@@ -24,7 +24,6 @@ export interface ILightBoxProps {
   keyRepeatLimit?: number;
   keyRepeatKeyupBonus?: number;
   imageTitle?: React.ReactNode | string;
-  imageCaption?: React.ReactNode | string;
   imageCrossOrigin?: string;
   toolbarButtons?: React.ReactNode[];
   reactModalStyle?: any;

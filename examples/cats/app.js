@@ -151,8 +151,13 @@ class App extends Component {
           onMoveNextRequest={this.moveNext}
           onImageLoadError={App.onImageLoadError}
           imageTitle={titles[this.state.index]}
-          imageCaption={captions[this.state.index]}
-          footer={<div>dupa</div>}
+          footer={
+            captions[this.state.index] && (
+              <div>
+                <p>{captions[this.state.index]}</p>
+              </div>
+            )
+          }
         />
       );
     }
