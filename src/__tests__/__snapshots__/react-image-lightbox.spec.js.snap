@@ -104,107 +104,107 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
               tabindex="-1"
             >
               <div
-                class="ril-outer ril__outer ril__outerAnimating  "
+                class="ril-outer ril-outer-animating"
                 style="transition: opacity 300ms; animation-duration: 300ms; animation-direction: reverse;"
                 tabindex="-1"
               >
                 <div
-                  class="ril-inner ril__inner"
+                  class="ril-inner"
                 >
                   <div
-                    class="ril-image-current ril__image ril-not-loaded"
+                    class="ril-image ril-not-loaded ril-image-current"
                     style="transform: translate3d(0px,0px,0) scale3d(NaN,NaN,1);"
                   >
                     <div
-                      class="ril__loadingContainer"
+                      class="ril-loading-container"
                     >
                       <div
-                        class="ril-loading-circle ril__loadingCircle ril__loadingContainer__icon"
+                        class="ril-loading-circle ril-loading-container-icon"
                       >
                         <div
-                          class="ril-loading-circle-point ril__loadingCirclePoint"
+                          class="ril-loading-circle-point"
                         />
                         <div
-                          class="ril-loading-circle-point ril__loadingCirclePoint"
+                          class="ril-loading-circle-point"
                         />
                         <div
-                          class="ril-loading-circle-point ril__loadingCirclePoint"
+                          class="ril-loading-circle-point"
                         />
                         <div
-                          class="ril-loading-circle-point ril__loadingCirclePoint"
+                          class="ril-loading-circle-point"
                         />
                         <div
-                          class="ril-loading-circle-point ril__loadingCirclePoint"
+                          class="ril-loading-circle-point"
                         />
                         <div
-                          class="ril-loading-circle-point ril__loadingCirclePoint"
+                          class="ril-loading-circle-point"
                         />
                         <div
-                          class="ril-loading-circle-point ril__loadingCirclePoint"
+                          class="ril-loading-circle-point"
                         />
                         <div
-                          class="ril-loading-circle-point ril__loadingCirclePoint"
+                          class="ril-loading-circle-point"
                         />
                         <div
-                          class="ril-loading-circle-point ril__loadingCirclePoint"
+                          class="ril-loading-circle-point"
                         />
                         <div
-                          class="ril-loading-circle-point ril__loadingCirclePoint"
+                          class="ril-loading-circle-point"
                         />
                         <div
-                          class="ril-loading-circle-point ril__loadingCirclePoint"
+                          class="ril-loading-circle-point"
                         />
                         <div
-                          class="ril-loading-circle-point ril__loadingCirclePoint"
+                          class="ril-loading-circle-point"
                         />
                       </div>
                     </div>
                   </div>
                 </div>
                 <div
-                  class="ril-toolbar ril__toolbar"
+                  class="ril-toolbar"
                 >
                   <ul
-                    class="ril-toolbar-left ril__toolbarSide ril__toolbarLeftSide"
+                    class="ril-toolbar-side ril-toolbar-left"
                   >
                     <li
-                      class="ril-toolbar__item ril__toolbarItem"
+                      class="ril-toolbar-item"
                     >
                       <span
-                        class="ril-toolbar__item__child ril__toolbarItemChild"
+                        class="ril-toolbar-item-child"
                       />
                     </li>
                   </ul>
                   <ul
-                    class="ril-toolbar-right ril__toolbarSide ril__toolbarRightSide"
+                    class="ril-toolbar-side ril-toolbar-right"
                   >
                     <li
-                      class="ril-toolbar__item ril__toolbarItem"
+                      class="ril-toolbar-item"
                     >
                       <button
                         aria-label="Zoom in"
-                        class="ril-zoom-in ril__toolbarItemChild ril__builtinButton ril__zoomInButton"
+                        class="ril-toolbar-item-child ril-builtin-btn ril-zoom-in"
                         title="Zoom in"
                         type="button"
                       />
                     </li>
                     <li
-                      class="ril-toolbar__item ril__toolbarItem"
+                      class="ril-toolbar-item"
                     >
                       <button
                         aria-label="Zoom out"
-                        class="ril-zoom-out ril__toolbarItemChild ril__builtinButton ril__zoomOutButton ril__builtinButtonDisabled"
+                        class="ril-toolbar-item-child ril-builtin-btn ril-zoom-out ril-builtin-btn-disabled"
                         disabled=""
                         title="Zoom out"
                         type="button"
                       />
                     </li>
                     <li
-                      class="ril-toolbar__item ril__toolbarItem"
+                      class="ril-toolbar-item"
                     >
                       <button
                         aria-label="Close lightbox"
-                        class="ril-close ril-toolbar__item__child ril__toolbarItemChild ril__builtinButton ril__closeButton"
+                        class="ril-toolbar-item-child ril-builtin-btn ril-close"
                         title="Close lightbox"
                         type="button"
                       />
@@ -331,7 +331,7 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
             tabIndex="-1"
           >
             <div
-              className="ril-outer ril__outer ril__outerAnimating  "
+              className="ril-outer ril-outer-animating"
               onKeyDown={[Function]}
               onKeyUp={[Function]}
               onMouseDown={[Function]}
@@ -349,11 +349,11 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
               tabIndex="-1"
             >
               <div
-                className="ril-inner ril__inner"
+                className="ril-inner"
                 onClick={[Function]}
               >
                 <div
-                  className="ril-image-current ril__image ril-not-loaded"
+                  className="ril-image ril-not-loaded ril-image-current"
                   key="/fake/image/src.jpgi0"
                   style={
                     Object {
@@ -362,57 +362,57 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
                   }
                 >
                   <div
-                    className="ril__loadingContainer"
+                    className="ril-loading-container"
                   >
                     <div
-                      className="ril-loading-circle ril__loadingCircle ril__loadingContainer__icon"
+                      className="ril-loading-circle ril-loading-container-icon"
                     >
                       <div
-                        className="ril-loading-circle-point ril__loadingCirclePoint"
+                        className="ril-loading-circle-point"
                         key="0"
                       />
                       <div
-                        className="ril-loading-circle-point ril__loadingCirclePoint"
+                        className="ril-loading-circle-point"
                         key="1"
                       />
                       <div
-                        className="ril-loading-circle-point ril__loadingCirclePoint"
+                        className="ril-loading-circle-point"
                         key="2"
                       />
                       <div
-                        className="ril-loading-circle-point ril__loadingCirclePoint"
+                        className="ril-loading-circle-point"
                         key="3"
                       />
                       <div
-                        className="ril-loading-circle-point ril__loadingCirclePoint"
+                        className="ril-loading-circle-point"
                         key="4"
                       />
                       <div
-                        className="ril-loading-circle-point ril__loadingCirclePoint"
+                        className="ril-loading-circle-point"
                         key="5"
                       />
                       <div
-                        className="ril-loading-circle-point ril__loadingCirclePoint"
+                        className="ril-loading-circle-point"
                         key="6"
                       />
                       <div
-                        className="ril-loading-circle-point ril__loadingCirclePoint"
+                        className="ril-loading-circle-point"
                         key="7"
                       />
                       <div
-                        className="ril-loading-circle-point ril__loadingCirclePoint"
+                        className="ril-loading-circle-point"
                         key="8"
                       />
                       <div
-                        className="ril-loading-circle-point ril__loadingCirclePoint"
+                        className="ril-loading-circle-point"
                         key="9"
                       />
                       <div
-                        className="ril-loading-circle-point ril__loadingCirclePoint"
+                        className="ril-loading-circle-point"
                         key="10"
                       />
                       <div
-                        className="ril-loading-circle-point ril__loadingCirclePoint"
+                        className="ril-loading-circle-point"
                         key="11"
                       />
                     </div>
@@ -420,59 +420,84 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
                 </div>
               </div>
               <div
-                className="ril-toolbar ril__toolbar"
+                className="ril-toolbar"
               >
                 <ul
-                  className="ril-toolbar-left ril__toolbarSide ril__toolbarLeftSide"
+                  className="ril-toolbar-side ril-toolbar-left"
                 >
                   <li
-                    className="ril-toolbar__item ril__toolbarItem"
+                    className="ril-toolbar-item"
                   >
                     <span
-                      className="ril-toolbar__item__child ril__toolbarItemChild"
+                      className="ril-toolbar-item-child"
                     />
                   </li>
                 </ul>
                 <ul
-                  className="ril-toolbar-right ril__toolbarSide ril__toolbarRightSide"
+                  className="ril-toolbar-side ril-toolbar-right"
                 >
-                  <li
-                    className="ril-toolbar__item ril__toolbarItem"
+                  <ForwardRef
+                    className="ril-zoom-in"
+                    disabled={false}
+                    key="zoom-in"
+                    label="Zoom in"
+                    onClick={[Function]}
                   >
-                    <button
-                      aria-label="Zoom in"
-                      className="ril-zoom-in ril__toolbarItemChild ril__builtinButton ril__zoomInButton"
-                      disabled={false}
-                      key="zoom-in"
-                      onClick={[Function]}
-                      title="Zoom in"
-                      type="button"
-                    />
-                  </li>
-                  <li
-                    className="ril-toolbar__item ril__toolbarItem"
+                    <li
+                      className="ril-toolbar-item"
+                    >
+                      <button
+                        aria-label="Zoom in"
+                        className="ril-toolbar-item-child ril-builtin-btn ril-zoom-in"
+                        disabled={false}
+                        key="close"
+                        onClick={[Function]}
+                        title="Zoom in"
+                        type="button"
+                      />
+                    </li>
+                  </ForwardRef>
+                  <ForwardRef
+                    className="ril-zoom-out"
+                    disabled={true}
+                    key="zoom-out"
+                    label="Zoom out"
+                    onClick={[Function]}
                   >
-                    <button
-                      aria-label="Zoom out"
-                      className="ril-zoom-out ril__toolbarItemChild ril__builtinButton ril__zoomOutButton ril__builtinButtonDisabled"
-                      disabled={true}
-                      key="zoom-out"
-                      title="Zoom out"
-                      type="button"
-                    />
-                  </li>
-                  <li
-                    className="ril-toolbar__item ril__toolbarItem"
+                    <li
+                      className="ril-toolbar-item"
+                    >
+                      <button
+                        aria-label="Zoom out"
+                        className="ril-toolbar-item-child ril-builtin-btn ril-zoom-out ril-builtin-btn-disabled"
+                        disabled={true}
+                        key="close"
+                        title="Zoom out"
+                        type="button"
+                      />
+                    </li>
+                  </ForwardRef>
+                  <ForwardRef
+                    className="ril-close"
+                    disabled={false}
+                    key="close"
+                    label="Close lightbox"
+                    onClick={[Function]}
                   >
-                    <button
-                      aria-label="Close lightbox"
-                      className="ril-close ril-toolbar__item__child ril__toolbarItemChild ril__builtinButton ril__closeButton"
-                      key="close"
-                      onClick={[Function]}
-                      title="Close lightbox"
-                      type="button"
-                    />
-                  </li>
+                    <li
+                      className="ril-toolbar-item"
+                    >
+                      <button
+                        aria-label="Close lightbox"
+                        className="ril-toolbar-item-child ril-builtin-btn ril-close"
+                        disabled={false}
+                        key="close"
+                        onClick={[Function]}
+                        title="Close lightbox"
+                        type="button"
+                      />
+                    </li>
+                  </ForwardRef>
                 </ul>
               </div>
             </div>

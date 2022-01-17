@@ -38,6 +38,7 @@ export interface ILightBoxProps {
   zoomInLabel?: string;
   zoomOutLabel?: string;
   closeLabel?: string;
+  footer?: React.ReactNode;
   children?: React.ReactNode;
 }
 

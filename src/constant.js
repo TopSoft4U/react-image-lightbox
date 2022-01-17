@@ -27,7 +27,6 @@ export const ACTION_NONE = 0;
 export const ACTION_MOVE = 1;
 export const ACTION_SWIPE = 2;
 export const ACTION_PINCH = 3;
-export const ACTION_ROTATE = 4;
 
 // Events source
 export const SOURCE_ANY = 0;

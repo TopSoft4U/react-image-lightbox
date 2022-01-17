@@ -50,14 +50,14 @@ describe('Lightbox structure', () => {
   });
 
   it('contains zoom buttons when enableZoom is true (default)', () => {
-    expect(wrapper.find('.ril-zoom-out').length).toEqual(1);
-    expect(wrapper.find('.ril-zoom-in').length).toEqual(1);
+    expect(wrapper.find('button.ril-zoom-out').length).toEqual(1);
+    expect(wrapper.find('button.ril-zoom-in').length).toEqual(1);
   });
 
   it('does not contain zoom buttons when enableZoom is false', () => {
     wrapper.setProps({ enableZoom: false });
-    expect(wrapper.find('.ril-zoom-out').length).toEqual(0);
-    expect(wrapper.find('.ril-zoom-in').length).toEqual(0);
+    expect(wrapper.find('button.ril-zoom-out').length).toEqual(0);
+    expect(wrapper.find('button.ril-zoom-in').length).toEqual(0);
   });
 
   it('does not contain a caption bar when no caption is supplied', () => {
@@ -73,9 +73,7 @@ describe('Lightbox structure', () => {
     wrapper.setProps({
       toolbarButtons: [<button type="button" className="my-test-button" />],
     });
-    expect(wrapper.find('.ril-toolbar__item .my-test-button').length).toEqual(
-      1
-    );
+    expect(wrapper.find('.ril-toolbar-item .my-test-button').length).toEqual(1);
   });
 
   it('contains image title when supplied', () => {
@@ -84,9 +82,8 @@ describe('Lightbox structure', () => {
     });
 
     expect(
-      wrapper.find(
-        '.ril-toolbar-left .ril-toolbar__item__child .my-image-title'
-      ).length
+      wrapper.find('.ril-toolbar-left .ril-toolbar-item-child .my-image-title')
+        .length
     ).toEqual(1);
   });
 });
@@ -160,7 +157,7 @@ describe('Events', () => {
 
   it('Calls onCloseRequest when close button clicked', () => {
     expect(mockFns.onCloseRequest).toHaveBeenCalledTimes(0);
-    wrapper.find('.ril-close').simulate('click');
+    wrapper.find('button.ril-close').simulate('click');
     expect(mockFns.onCloseRequest).toHaveBeenCalledTimes(1);
     expect(mockFns.onCloseRequest).not.toHaveBeenCalledWith();
   });
@@ -284,7 +281,7 @@ describe('Error Testing', () => {
       loadErrorStatus: { mainSrc: true },
     });
     wrapper.update();
-    expect(wrapper.find('div.ril__errorContainer')).toHaveText(
+    expect(wrapper.find('div.ril-error-container')).toHaveText(
       'This image failed to load'
     );
   });
@@ -298,7 +295,7 @@ describe('Error Testing', () => {
       imageLoadErrorMessage,
     });
     wrapper.update();
-    expect(wrapper.find('div.ril__errorContainer')).toContainReact(
+    expect(wrapper.find('div.ril-error-container')).toContainReact(
       imageLoadErrorMessage
     );
   });

@@ -97,8 +97,8 @@ class App extends Component {
     console.error(`Could not load image at ${imageSrc}`, errorEvent); // eslint-disable-line no-console
   }
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     this.state = {
       index: 0,
@@ -152,6 +152,7 @@ class App extends Component {
           onImageLoadError={App.onImageLoadError}
           imageTitle={titles[this.state.index]}
           imageCaption={captions[this.state.index]}
+          footer={<div>dupa</div>}
         />
       );
     }
