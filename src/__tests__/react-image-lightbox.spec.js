@@ -216,6 +216,7 @@ describe('Key bindings', () => {
   const simulateKey = keyCode => {
     // Avoid interference by key throttling
     wrapper.instance().lastKeyDownTime = new Date('1970-01-01').getTime();
+    wrapper.setProps({ animationOnKeyInput: false });
 
     wrapper.find('.ril-outer').simulate('keyDown', { keyCode });
   };

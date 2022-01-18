@@ -26,10 +26,16 @@ import {
 } from './constant';
 import './style.css';
 import ToolbarButton from './Components/ToolbarButton';
+import Loader from './Components/Loader';
 
 class ReactImageLightbox extends Component {
   static isTargetMatchImage(target) {
-    return target && /ril-image-current/.test(target.className);
+    return (
+      target &&
+      (/ril-inner/.test(target.className) ||
+        /ril-image-wrapper/.test(target.className) ||
+        /ril-image/.test(target.className))
+    );
   }
 
   static parseMouseEvent(mouseEvent) {
@@ -60,16 +66,9 @@ class ReactImageLightbox extends Component {
   }
 
   // Request to transition to the previous image
-  static getTransform({ x = 0, y = 0, zoom = 1, width, targetWidth }) {
-    let nextX = x;
-    const windowWidth = getWindowWidth();
-    if (width > windowWidth) {
-      nextX += (windowWidth - width) / 2;
-    }
-    const scaleFactor = zoom * (targetWidth / width);
-
+  static getTransform({ x = 0, y = 0, zoom = 1 }) {
     return {
-      transform: `translate3d(${nextX}px,${y}px,0) scale3d(${scaleFactor},${scaleFactor},1)`,
+      transform: `translate3d(${x}px,${y}px,0) scale3d(${zoom},${zoom},${zoom})`,
     };
   }
 
@@ -109,6 +108,7 @@ class ReactImageLightbox extends Component {
 
     // Refs
     this.outerEl = React.createRef();
+    this.currentEl = React.createRef();
     this.zoomInBtn = React.createRef();
     this.zoomOutBtn = React.createRef();
     this.caption = React.createRef();
@@ -326,29 +326,28 @@ class ReactImageLightbox extends Component {
     };
   }
 
-  getMaxOffsets(zoomLevel = this.state.zoomLevel) {
-    const currentImageInfo = this.getBestImageForType('mainSrc');
-    if (!currentImageInfo) {
-      return { maxX: 0, minX: 0, maxY: 0, minY: 0 };
-    }
-
+  getMaxOffsets() {
     const boxSize = this.getLightboxRect();
-    const zoomMultiplier = this.getZoomMultiplier(zoomLevel);
+
+    const imgElement = this.currentEl.current.getBoundingClientRect();
+    const { width, height } = imgElement;
+
+    // TODO This formula needs to be rewritten, because there are issues with big zooms.
 
     let maxX;
-    if (zoomMultiplier * currentImageInfo.width - boxSize.width < 0) {
+    if (width - boxSize.width < 0) {
       // if there is still blank space in the X dimension, don't limit except to the opposite edge
-      maxX = (boxSize.width - zoomMultiplier * currentImageInfo.width) / 2;
+      maxX = (boxSize.width - width) / 2;
     } else {
-      maxX = (zoomMultiplier * currentImageInfo.width - boxSize.width) / 2;
+      maxX = (width - boxSize.width) / 2;
     }
 
     let maxY;
-    if (zoomMultiplier * currentImageInfo.height - boxSize.height < 0) {
+    if (height - boxSize.height < 0) {
       // if there is still blank space in the Y dimension, don't limit except to the opposite edge
-      maxY = (boxSize.height - zoomMultiplier * currentImageInfo.height) / 2;
+      maxY = (boxSize.height - height) / 2;
     } else {
-      maxY = (zoomMultiplier * currentImageInfo.height - boxSize.height) / 2;
+      maxY = (height - boxSize.height) / 2;
     }
 
     return {
@@ -794,16 +793,16 @@ class ReactImageLightbox extends Component {
     }
   }
 
-  multiPointerStart(event) {
+  multiPointerStart() {
     this.handleEnd(null);
     switch (this.pointerList.length) {
       case 1: {
-        event.preventDefault();
+        // event.preventDefault();
         this.decideMoveOrSwipe(this.pointerList[0]);
         break;
       }
       case 2: {
-        event.preventDefault();
+        // event.preventDefault();
         this.handlePinchStart(this.pointerList);
         break;
       }
@@ -815,17 +814,17 @@ class ReactImageLightbox extends Component {
   multiPointerMove(event, pointerList) {
     switch (this.currentAction) {
       case ACTION_MOVE: {
-        event.preventDefault();
+        // event.preventDefault();
         this.handleMove(pointerList[0]);
         break;
       }
       case ACTION_SWIPE: {
-        event.preventDefault();
+        // event.preventDefault();
         this.handleSwipe(pointerList[0]);
         break;
       }
       case ACTION_PINCH: {
-        event.preventDefault();
+        // event.preventDefault();
         this.handlePinch(pointerList);
         break;
       }
@@ -1254,15 +1253,21 @@ class ReactImageLightbox extends Component {
       loadErrorStatus,
     } = this.state;
 
-    const boxSize = this.getLightboxRect();
-    let transitionStyle = {};
+    // TODO finish scroller animation
+    const scrollerTransitionStyle = {
+      transform: `translate3d(-100%, 0, 0)`,
+    };
+
+    const imageTransitionStyle = {};
+
+    if (!animationDisabled) {
+      scrollerTransitionStyle.transition = `transform ${animationDuration}ms`;
+    }
 
     // Transition settings for sliding animations
     if (!animationDisabled && this.isAnimating()) {
-      transitionStyle = {
-        ...transitionStyle,
-        transition: `transform ${animationDuration}ms`,
-      };
+      // transitionStyle.transform = `translate3d(-200%, 0, 0)`;
+      imageTransitionStyle.transition = `transform ${animationDuration}ms`;
     }
 
     // Key endings to differentiate between images with the same src
@@ -1281,7 +1286,7 @@ class ReactImageLightbox extends Component {
       const bestImageInfo = this.getBestImageForType(srcType);
 
       const imageStyle = {
-        ...transitionStyle,
+        ...imageTransitionStyle,
         ...ReactImageLightbox.getTransform({
           ...transforms,
           ...bestImageInfo,
@@ -1300,7 +1305,11 @@ class ReactImageLightbox extends Component {
       if (!bestImageInfo && hasTrueValue(loadErrorStatus)) {
         images.push(
           <div
-            className={classNames('ril-image', 'ril-errored', imageClass)}
+            className={classNames(
+              'ril-image-wrapper',
+              'ril-errored',
+              imageClass
+            )}
             style={imageStyle}
             key={this.props[srcType] + keyEndings[srcType]}
           >
@@ -1312,26 +1321,18 @@ class ReactImageLightbox extends Component {
 
         return;
       }
+
       if (!bestImageInfo) {
-        const loadingIcon =
-          loader !== undefined ? (
-            loader
-          ) : (
-            <div className="ril-loading-circle ril-loading-container-icon">
-              {[...new Array(12)].map((_, index) => (
-                <div
-                  // eslint-disable-next-line react/no-array-index-key
-                  key={index}
-                  className="ril-loading-circle-point"
-                />
-              ))}
-            </div>
-          );
+        const loadingIcon = loader !== undefined ? loader : <Loader />;
 
         // Fall back to loading icon if the thumbnail has not been loaded
         images.push(
           <div
-            className={classNames('ril-image', 'ril-not-loaded', imageClass)}
+            className={classNames(
+              'ril-image-wrapper',
+              'ril-not-loaded',
+              imageClass
+            )}
             style={imageStyle}
             key={this.props[srcType] + keyEndings[srcType]}
           >
@@ -1348,7 +1349,7 @@ class ReactImageLightbox extends Component {
         images.push(
           <div
             className={classNames(
-              'ril-image',
+              'ril-image-wrapper',
               'ril-image-discourager',
               imageClass
             )}
@@ -1362,27 +1363,34 @@ class ReactImageLightbox extends Component {
         );
       } else {
         images.push(
-          <img
-            {...(imageCrossOrigin ? { crossOrigin: imageCrossOrigin } : {})}
-            className={classNames('ril-image', imageClass)}
+          <div
+            key={imageSrc + keyEndings[srcType]}
+            className={classNames('ril-image-wrapper')}
+            ref={
+              imageClass.includes('ril-image-current')
+                ? this.currentEl
+                : undefined
+            }
+            style={imageStyle}
             onDoubleClick={this.handleImageDoubleClick}
             onWheel={this.handleImageMouseWheel}
             onDragStart={e => e.preventDefault()}
-            style={imageStyle}
-            src={imageSrc}
-            key={imageSrc + keyEndings[srcType]}
-            alt={typeof imageTitle === 'string' ? imageTitle : 'Image'}
-            draggable={false}
-          />
+          >
+            <img
+              className={classNames('ril-image', imageClass)}
+              {...(imageCrossOrigin ? { crossOrigin: imageCrossOrigin } : {})}
+              src={imageSrc}
+              alt={typeof imageTitle === 'string' ? imageTitle : 'Image'}
+              draggable={false}
+            />
+          </div>
         );
       }
     };
 
     const zoomMultiplier = this.getZoomMultiplier();
     // Next Image (displayed on the right)
-    addImage('nextSrc', 'ril-image-next', {
-      x: boxSize.width,
-    });
+    addImage('nextSrc', 'ril-image-next');
     // Main Image
     addImage('mainSrc', 'ril-image-current', {
       x: -1 * offsetX,
@@ -1390,9 +1398,7 @@ class ReactImageLightbox extends Component {
       zoom: zoomMultiplier,
     });
     // Previous Image (displayed on the left)
-    addImage('prevSrc', 'ril-image-prev', {
-      x: -1 * boxSize.width,
-    });
+    addImage('prevSrc', 'ril-image-prev');
 
     return (
       <div // eslint-disable-line jsx-a11y/no-static-element-interactions
@@ -1470,9 +1476,20 @@ class ReactImageLightbox extends Component {
           </div>
         )}
 
-        <div className={classNames('ril-inner', this.props.innerClassName)}>
-          {images}
+        <div
+          className={classNames('ril-inner', this.props.innerClassName)}
+          style={scrollerTransitionStyle}
+        >
+          <div className="ril-test">{images}</div>
         </div>
+
+        {footer && (
+          <div
+            className={classNames('ril-bottom-bar', this.props.footerClassName)}
+          >
+            {footer}
+          </div>
+        )}
 
         {prevSrc && (
           <button // Move to previous image button
@@ -1494,14 +1511,6 @@ class ReactImageLightbox extends Component {
             title={this.props.nextLabel}
             onClick={!this.isAnimating() ? this.requestMoveNext : undefined} // Ignore clicks during animation
           />
-        )}
-
-        {footer && (
-          <div
-            className={classNames('ril-bottom-bar', this.props.footerClassName)}
-          >
-            {footer}
-          </div>
         )}
       </div>
     );
@@ -1652,7 +1661,7 @@ ReactImageLightbox.defaultProps = {
   toolbarButtons: null,
   animationDisabled: false,
   animationDuration: 300,
-  animationOnKeyInput: false,
+  animationOnKeyInput: true,
   clickOutsideToClose: true,
   closeLabel: 'Close lightbox',
   discourageDownloads: false,

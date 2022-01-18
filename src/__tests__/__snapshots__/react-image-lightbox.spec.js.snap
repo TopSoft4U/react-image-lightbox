@@ -4,7 +4,7 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
 <ReactImageLightbox
   animationDisabled={false}
   animationDuration={300}
-  animationOnKeyInput={false}
+  animationOnKeyInput={true}
   clickOutsideToClose={true}
   closeLabel="Close lightbox"
   discourageDownloads={false}
@@ -134,70 +134,53 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
     </div>
     <div
       className="ril-inner"
+      style={
+        Object {
+          "transform": "translate3d(-100%, 0, 0)",
+          "transition": "transform 300ms",
+        }
+      }
     >
       <div
-        className="ril-image ril-not-loaded ril-image-current"
-        key="/fake/image/src.jpgi0"
-        style={
-          Object {
-            "transform": "translate3d(0px,0px,0) scale3d(NaN,NaN,1)",
-          }
-        }
+        className="ril-test"
       >
         <div
-          className="ril-loading-container"
+          className="ril-image-wrapper ril-not-loaded ril-image-current"
+          key="/fake/image/src.jpgi0"
+          style={
+            Object {
+              "transform": "translate3d(0px,0px,0) scale3d(1,1,1)",
+            }
+          }
         >
           <div
-            className="ril-loading-circle ril-loading-container-icon"
+            className="ril-loading-container"
           >
-            <div
-              className="ril-loading-circle-point"
-              key="0"
-            />
-            <div
-              className="ril-loading-circle-point"
-              key="1"
-            />
-            <div
-              className="ril-loading-circle-point"
-              key="2"
-            />
-            <div
-              className="ril-loading-circle-point"
-              key="3"
-            />
-            <div
-              className="ril-loading-circle-point"
-              key="4"
-            />
-            <div
-              className="ril-loading-circle-point"
-              key="5"
-            />
-            <div
-              className="ril-loading-circle-point"
-              key="6"
-            />
-            <div
-              className="ril-loading-circle-point"
-              key="7"
-            />
-            <div
-              className="ril-loading-circle-point"
-              key="8"
-            />
-            <div
-              className="ril-loading-circle-point"
-              key="9"
-            />
-            <div
-              className="ril-loading-circle-point"
-              key="10"
-            />
-            <div
-              className="ril-loading-circle-point"
-              key="11"
-            />
+            <Loader>
+              <div
+                className="ril-loader"
+              >
+                <svg
+                  className="svg-container"
+                  height="100"
+                  viewBox="0 0 100 100"
+                  width="100"
+                >
+                  <circle
+                    className="ril-loader-svg ril-loader-bg"
+                    cx="50"
+                    cy="50"
+                    r="45"
+                  />
+                  <circle
+                    className="ril-loader-svg ril-loader-animate"
+                    cx="50"
+                    cy="50"
+                    r="45"
+                  />
+                </svg>
+              </div>
+            </Loader>
           </div>
         </div>
       </div>

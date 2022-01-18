@@ -70,31 +70,6 @@ const titles = [
   </span>,
 ];
 
-const captions = [
-  'Cat in the snow',
-  '',
-  <p>
-    .. not in the&nbsp;
-    <em>mood</em>
-    &nbsp;for games right now
-    <br />
-    ...
-    <br />
-    ...
-    <br />
-    ...
-    <br />
-    ...
-    <br />
-    ...
-    <br />
-    ...
-    <br />
-    C&#39;mon. Seriously.
-  </p>,
-  '',
-];
-
 class App extends Component {
   static onImageLoadError(imageSrc, _srcType, errorEvent) {
     console.error(`Could not load image at ${imageSrc}`, errorEvent); // eslint-disable-line no-console
@@ -154,13 +129,7 @@ class App extends Component {
             onMoveNextRequest={this.moveNext}
             onImageLoadError={App.onImageLoadError}
             imageTitle={titles[this.state.index]}
-            footer={
-              captions[this.state.index] && (
-                <div>
-                  <p>{captions[this.state.index]}</p>
-                </div>
-              )
-            }
+            footer={<div style={{ height: '50px' }} />}
           />
         </Modal.Body>
       </Modal>
