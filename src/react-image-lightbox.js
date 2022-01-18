@@ -5,7 +5,6 @@ import {
   getHighestSafeWindowContext,
   getWindowHeight,
   getWindowWidth,
-  translate,
 } from './util';
 import {
   ACTION_MOVE,
@@ -1372,9 +1371,7 @@ class ReactImageLightbox extends Component {
             style={imageStyle}
             src={imageSrc}
             key={imageSrc + keyEndings[srcType]}
-            alt={
-              typeof imageTitle === 'string' ? imageTitle : translate('Image')
-            }
+            alt={typeof imageTitle === 'string' ? imageTitle : 'Image'}
             draggable={false}
           />
         );
