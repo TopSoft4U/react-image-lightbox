@@ -10,10 +10,10 @@ export interface ILightBoxProps {
   nextSrcThumbnail?: string;
 
   onCloseRequest(): void;
-  onMovePrevRequest(): void;
-  onMoveNextRequest(): void;
-  onImageLoadError(): void;
-  onImageLoad(): void;
+  onMovePrevRequest?(): void;
+  onMoveNextRequest?(): void;
+  onImageLoadError?(): void;
+  onImageLoad?(): void;
 
   discourageDownloads?: boolean;
 
