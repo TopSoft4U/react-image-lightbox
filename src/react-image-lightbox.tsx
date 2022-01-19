@@ -8,19 +8,20 @@ import {
   MouseEventHandler,
   PointerEvent,
   PointerEventHandler,
-  ReactNode,
   RefObject,
+  SyntheticEvent,
   Touch,
   TouchEventHandler,
   WheelEventHandler
-  ,SyntheticEvent} from "react";
+} from "react";
 import classNames from "classnames";
-import {getHighestSafeWindowContext, getWindowHeight, getWindowWidth,stopEvent} from "./util";
+import {getHighestSafeWindowContext, getWindowHeight, getWindowWidth, loadableIndexes, stopEvent} from "./util";
 import {
   ACTION_MOVE,
   ACTION_NONE,
   ACTION_PINCH,
   ACTION_SWIPE,
+  IMAGE_KEYS,
   KEYS,
   MAX_ZOOM_LEVEL,
   MIN_SWIPE_DISTANCE,
@@ -32,18 +33,27 @@ import {
   WHEEL_MOVE_X_THRESHOLD,
   WHEEL_MOVE_Y_THRESHOLD,
   ZOOM_BUTTON_INCREMENT_SIZE,
-  ZOOM_RATIO,
+  ZOOM_RATIO
 } from "./constant";
 import "./style.css";
 import ToolbarButton from "./Components/ToolbarButton";
-import Loader from "./Components/Loader";
-import {LightboxImageCacheItem, LightboxPointer, LightboxSrcType, LightboxTransform, ReactImageLightboxProps, ReactImageLightboxState,LightboxLoadErrorStatus,LightboxXY} from "./types";
+import {
+  LightboxImageCacheItem,
+  LightboxLoadErrorStatus,
+  LightboxPointer,
+  LightboxSrcType,
+  LightboxXY,
+  ReactImageLightboxGenerateLoadDoneCallback,
+  ReactImageLightboxGenerateLoadError,
+  ReactImageLightboxProps,
+  ReactImageLightboxState
+  ,RILBestImageForType,RILScrollerImage} from "./types";
+import Scroller from "./Components/Scroller";
 
 class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLightboxState> {
   static defaultProps = {
     animationDisabled: false,
     animationDuration: 300,
-    animationOnKeyInput: true,
     clickOutsideToClose: true,
     closeLabel: "Close lightbox",
     discourageDownloads: false,
@@ -59,6 +69,8 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
 
     // Custom
     showToolbar: true,
+    loadAhead: 1,
+    infiniteScrolling: true,
   };
 
   state = {
@@ -71,7 +83,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
     isClosing: !this.props.animationDisabled,
 
     // Component parts should animate (e.g., when images are moving, or image is being zoomed)
-    shouldAnimate: false,
+    shouldAnimateSnap: false,
 
     // -----------------------------
     // Zoom settings
@@ -147,7 +159,10 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
 
   private didUnmount = false;
 
+  private loadableIndexes: number[] = [];
+
   static isTargetMatchImage = (target: EventTarget) => {
+    console.log(target);
     if (!target)
       return false;
 
@@ -157,6 +172,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
       (
         /ril-inner/.test(className) ||
         /ril-image-wrapper/.test(className) ||
+        /ril-download-blocker/.test(className) ||
         /ril-image/.test(className)
       )
     );
@@ -183,11 +199,6 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
     y: parseInt(String(pointerEvent.clientY), 10),
   });
 
-  // Request to transition to the previous image
-  static getTransform = ({x = 0, y = 0, zoom = 1}: Partial<LightboxTransform>) => ({
-    transform: `translate3d(${x}px,${y}px,0) scale3d(${zoom},${zoom},${zoom})`,
-  });
-
   componentDidMount() {
     if (!this.props.animationDisabled) {
       // Make opening animation play
@@ -211,50 +222,31 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
       this.windowContext?.addEventListener(type, this.listeners[type]);
     });
 
+    this.updateLoadableIndexes();
     this.loadAllImages();
   }
 
   shouldComponentUpdate(nextProps: ReactImageLightboxProps) {
-    this.getSrcTypes().forEach(srcType => {
-      if (this.props[srcType.name] !== nextProps[srcType.name]) {
-        this.moveRequested = false;
-      }
-    });
-
-    // Wait for move...
-    return !this.moveRequested;
+    this.moveRequested = this.props.activeIndex !== nextProps.activeIndex;
+    return true;
   }
 
   componentDidUpdate(prevProps: ReactImageLightboxProps) {
-    let sourcesChanged = false;
-    const prevSrcDict: Record<string, boolean> = {};
-    const nextSrcDict: Record<string, boolean> = {};
-    this.getSrcTypes().forEach(srcType => {
-      const name = srcType.name as LightboxSrcType;
+    this.updateLoadableIndexes();
 
-      const prevName = prevProps[name] ?? "";
-      const thisName = this.props[name] ?? "";
+    let sourcesChanged = prevProps.images.length !== this.props.images.length;
+    if (!sourcesChanged) {
+      const prevSrcs = prevProps.images.map(x => x.full);
+      const nextSrcs = this.props.images.map(x => x.full);
 
-      if (prevName !== thisName) {
-        sourcesChanged = true;
-
-        prevSrcDict[prevName] = true;
-        nextSrcDict[thisName] = true;
-      }
-    });
+      sourcesChanged = !prevSrcs.every((val, idx) => val === nextSrcs[idx]);
+    }
 
     if (sourcesChanged || this.moveRequested) {
-      // Reset the loaded state for images not rendered next
-      Object.keys(prevSrcDict).forEach(prevSrc => {
-        if (!(prevSrc in nextSrcDict) && prevSrc in this.imageCache) {
-          this.imageCache[prevSrc].loaded = false;
-        }
-      });
-
       this.moveRequested = false;
 
       // Load any new images
-      this.loadAllImages(this.props);
+      this.loadAllImages();
     }
   }
 
@@ -275,11 +267,16 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
     return id;
   };
 
+  updateLoadableIndexes = () => {
+    const {images, activeIndex, loadAhead, infiniteScrolling} = this.props;
+    this.loadableIndexes = loadableIndexes(images.length, activeIndex, loadAhead, infiniteScrolling);
+  }
+
   // Get info for the best suited image to display with the given srcType
-  getBestImageForType = (srcType: LightboxSrcType) => {
-    let imageSrc = this.props[srcType];
+  getBestImageForType = (index: number): RILBestImageForType | undefined => {
+    let imageSrc: string | undefined = this.props.images[index].full;
     if (!imageSrc)
-      return null;
+      return;
 
     let fitSizes = {
       width: 0, height: 0,
@@ -292,17 +289,16 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
         this.imageCache[imageSrc].height
       );
     } else {
-      const thumbKey = `${srcType}Thumbnail` as LightboxSrcType;
-      if (this.isImageLoaded((this.props[thumbKey]))) {
+      imageSrc = this.props.images[index].thumbnail;
+      if (imageSrc && this.isImageLoaded(imageSrc)) {
         // Fall back to using thumbnail if the image has not been loaded
-        imageSrc = this.props[thumbKey]!;
         fitSizes = this.getFitSizes(
           this.imageCache[imageSrc].width,
           this.imageCache[imageSrc].height,
           true
         );
       } else
-        return null;
+        return;
     }
 
     return {
@@ -377,33 +373,30 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
     };
   };
 
-  // Get image src types
-  getSrcTypes = (): Array<{ name: LightboxSrcType, keyEnding: string }> => [
-    {
-      name: "mainSrc",
-      keyEnding: `i${this.keyCounter}`,
-    },
-    {
-      name: "mainSrcThumbnail",
-      keyEnding: `t${this.keyCounter}`,
-    },
-    {
-      name: "nextSrc",
-      keyEnding: `i${this.keyCounter + 1}`,
-    },
-    {
-      name: "nextSrcThumbnail",
-      keyEnding: `t${this.keyCounter + 1}`,
-    },
-    {
-      name: "prevSrc",
-      keyEnding: `i${this.keyCounter - 1}`,
-    },
-    {
-      name: "prevSrcThumbnail",
-      keyEnding: `t${this.keyCounter - 1}`,
-    },
-  ];
+  getPrevSrc = () => {
+    const {images, infiniteScrolling, activeIndex} = this.props;
+
+    let index = activeIndex - 1;
+    if (!infiniteScrolling && index < 0)
+      return;
+    if (infiniteScrolling)
+      index = images.length - 1;
+
+    return images[index].full;
+  }
+
+  getNextSrc = () => {
+    const {images, infiniteScrolling, activeIndex} = this.props;
+
+    let index = activeIndex + 1;
+    if (!infiniteScrolling && index >= images.length)
+      return;
+    if (infiniteScrolling)
+      index = 0;
+
+    return images[index].full;
+
+  }
 
   /**
    * Get sizing when the image is scaled
@@ -465,7 +458,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
       return;
     }
 
-    const imageBaseSize = this.getBestImageForType("mainSrc");
+    const imageBaseSize = this.getBestImageForType(this.props.activeIndex);
     if (!imageBaseSize) {
       return;
     }
@@ -538,11 +531,6 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
   handleKeyInput: KeyboardEventHandler<HTMLDivElement> = (event) => {
     event.stopPropagation();
 
-    // Ignore key input during animations
-    if (this.isAnimating()) {
-      return;
-    }
-
     // Allow slightly faster navigation through the images when user presses keys repeatedly
     if (event.type === "keyup") {
       this.lastKeyDownTime -= this.props.keyRepeatKeyupBonus!;
@@ -567,12 +555,12 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
       // ESC key closes the lightbox
       case KEYS.ESC:
         stopEvent(event);
-        this.requestClose(event);
+        this.requestClose();
         break;
 
       // Left arrow key moves to previous image
       case KEYS.LEFT_ARROW:
-        if (!this.props.prevSrc) {
+        if (!this.getPrevSrc()) {
           return;
         }
 
@@ -583,7 +571,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
 
       // Right arrow key moves to next image
       case KEYS.RIGHT_ARROW:
-        if (!this.props.nextSrc) {
+        if (!this.getNextSrc()) {
           return;
         }
 
@@ -613,7 +601,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
     }, 300);
 
     // Prevent rapid-fire zoom behavior
-    if (this.wheelActionTimeout !== null || this.isAnimating()) {
+    if (this.wheelActionTimeout !== null || this.isAnimatingSnap()) {
       return;
     }
 
@@ -787,7 +775,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
     if (this.shouldHandleEvent(SOURCE_TOUCH)) {
       this.multiPointerMove(
         event,
-        Array.from(event.changedTouches).map( (eventTouch: Touch) =>
+        Array.from(event.changedTouches).map((eventTouch: Touch) =>
           ReactImageLightbox.parseTouchPointer(eventTouch)
         )
       );
@@ -930,6 +918,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
     this.moveStartY = 0;
     this.moveStartOffsetX = 0;
     this.moveStartOffsetY = 0;
+
     // Snap image back into frame if outside max offset range
     const maxOffsets = this.getMaxOffsets();
     const nextOffsetX = Math.max(
@@ -947,10 +936,10 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
       this.setState({
         offsetX: nextOffsetX,
         offsetY: nextOffsetY,
-        shouldAnimate: true,
+        shouldAnimateSnap: true,
       });
       this.setTimeout(() => {
-        this.setState({shouldAnimate: false});
+        this.setState({shouldAnimateSnap: false});
       }, this.props.animationDuration);
     }
   };
@@ -979,7 +968,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
     this.swipeEndX = 0;
     this.swipeEndY = 0;
 
-    if (!event || this.isAnimating() || xDiffAbs < yDiffAbs * 1.5) {
+    if (!event || this.isAnimatingSnap() || xDiffAbs < yDiffAbs * 1.5) {
       return;
     }
 
@@ -990,10 +979,10 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
       }
     }
 
-    if (xDiff > 0 && this.props.prevSrc) {
+    if (xDiff > 0 && this.getPrevSrc()) {
       stopEvent(event);
       this.requestMovePrev();
-    } else if (xDiff < 0 && this.props.nextSrc) {
+    } else if (xDiff < 0 && this.getNextSrc()) {
       stopEvent(event);
       this.requestMoveNext();
     }
@@ -1066,15 +1055,15 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
   }
 
   // Detach key and mouse input events
-  isAnimating = () => this.state.shouldAnimate || this.state.isClosing;
+  isAnimatingSnap = () => this.state.shouldAnimateSnap || this.state.isClosing;
 
   // Check if image is loaded
   isImageLoaded = (imageSrc: string | undefined) => imageSrc && imageSrc in this.imageCache && this.imageCache[imageSrc].loaded;
 
   // Load image from src and call callback with image width and height on load
-  loadImage({srcType, imageSrc, done}: { srcType: any, imageSrc: any, done: any }) {
+  loadImage({type, index, src, done}: { type: LightboxSrcType, index: number, src: string, done: ReactImageLightboxGenerateLoadError }) {
     // Return the image info if it is already cached
-    if (this.isImageLoaded(imageSrc)) {
+    if (this.isImageLoaded(src)) {
       this.setTimeout(() => {
         done();
       }, 1);
@@ -1083,25 +1072,25 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
 
     const inMemoryImage = new global.Image();
 
-    if (this.props.imageCrossOrigin) {
-      inMemoryImage.crossOrigin = this.props.imageCrossOrigin;
+    if (this.props.images[index].crossOrigin) {
+      inMemoryImage.crossOrigin = this.props.images[index].crossOrigin ?? null;
     }
 
     inMemoryImage.onerror = errorEvent => {
-      this.props.onImageLoadError?.(imageSrc, srcType, errorEvent);
+      this.props.onImageLoadError?.(src, type, index, errorEvent);
 
       // failed to load so set the state loadErrorStatus
       this.setState(prevState => ({
-        loadErrorStatus: {...prevState.loadErrorStatus, [srcType]: true},
+        loadErrorStatus: {...prevState.loadErrorStatus, [type]: true},
       }));
 
       done(errorEvent);
     };
 
     inMemoryImage.onload = () => {
-      this.props.onImageLoad?.(imageSrc, srcType, inMemoryImage);
+      this.props.onImageLoad?.(src, type, index, inMemoryImage);
 
-      this.imageCache[imageSrc] = {
+      this.imageCache[src] = {
         loaded: true,
         width: inMemoryImage.width,
         height: inMemoryImage.height,
@@ -1110,12 +1099,12 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
       done();
     };
 
-    inMemoryImage.src = imageSrc;
+    inMemoryImage.src = src;
   }
 
   // Load all images and their thumbnails
-  loadAllImages = (props = this.props) => {
-    const generateLoadDoneCallback = (srcType: LightboxSrcType, imageSrc: string) => (err: any) => {
+  loadAllImages = () => {
+    const generateLoadDoneCallback: ReactImageLightboxGenerateLoadDoneCallback = (type, index, imageSrc) => (err) => {
       // Give up showing image on error
       if (err) {
         return;
@@ -1123,7 +1112,9 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
 
       // Don't rerender if the src is not the same as when the load started
       // or if the component has unmounted
-      if (this.props[srcType] !== imageSrc || this.didUnmount) {
+      const newImages = this.props.images;
+      const propSrc = type.startsWith("full") ? newImages[index].full : newImages[index].thumbnail;
+      if (propSrc !== imageSrc || this.didUnmount) {
         return;
       }
 
@@ -1132,35 +1123,46 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
     };
 
     // Load the images
-    this.getSrcTypes().forEach(srcType => {
-      const type = srcType.name;
+    IMAGE_KEYS.forEach(type => {
+      this.props.images.forEach((image, index) => {
+        const imageKey = `${type}-${index}` as LightboxSrcType;
+        const src = image.full;
 
-      const loadErrorStatus = this.state.loadErrorStatus as LightboxLoadErrorStatus;
-      // there is no error when we try to load it initially
-      if (props[type] && type in this.state.loadErrorStatus && loadErrorStatus[type]) {
-        this.setState(prevState => ({
-          loadErrorStatus: {
-            ...prevState.loadErrorStatus,
-            [type]: false
-          },
-        }));
-      }
+        // Only visible ones
+        if (!this.loadableIndexes.includes(index))
+          return;
 
-      // Load unloaded images
-      if (props[type] && !this.isImageLoaded(props[type])) {
-        this.loadImage(
-          {srcType: type, imageSrc: props[type], done: generateLoadDoneCallback(type, props[type]!)}
-        );
-      }
+        const loadErrorStatus = this.state.loadErrorStatus as LightboxLoadErrorStatus;
+
+        // there is no error when we try to load it initially
+        if (src && index in loadErrorStatus && loadErrorStatus[imageKey]) {
+          this.setState(prevState => ({
+            loadErrorStatus: {
+              ...prevState.loadErrorStatus,
+              [imageKey]: false
+            },
+          }));
+        }
+
+        // Load unloaded images
+        if (src && !this.isImageLoaded(src)) {
+          this.loadImage({
+            type: imageKey,
+            index,
+            src,
+            done: generateLoadDoneCallback(imageKey, index, src)
+          });
+        }
+      });
     });
   };
 
   // Request that the lightbox be closed
-  requestClose = (event: SyntheticEvent) => {
+  requestClose = () => {
     // Call the parent close request
     const closeLightbox = () => this.props.onCloseRequest();
 
-    if (this.props.animationDisabled || (event.type === "keydown" && !this.props.animationOnKeyInput)) {
+    if (this.props.animationDisabled) {
       // No animation
       closeLightbox();
       return;
@@ -1174,7 +1176,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
     this.setTimeout(closeLightbox, this.props.animationDuration);
   }
 
-  requestMove = (direction: "prev" | "next") => {
+  requestMovePage = (direction: "prev" | "next") => {
     // Reset the zoom level on image move
     const nextState: ReactImageLightboxState = {
       zoomLevel: MIN_ZOOM_LEVEL,
@@ -1183,19 +1185,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
       loadErrorStatus: {},
     };
 
-    // Enable animated states
-    if (
-      !this.props.animationDisabled &&
-      (!this.keyPressed || this.props.animationOnKeyInput)
-    ) {
-      nextState.shouldAnimate = true;
-      this.setTimeout(
-        () => this.setState({shouldAnimate: false}),
-        this.props.animationDuration
-      );
-    }
     this.keyPressed = false;
-
     this.moveRequested = true;
 
     if (direction === "prev") {
@@ -1211,30 +1201,28 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
 
   // Request to transition to the next image
   requestMoveNext = () => {
-    this.requestMove("next");
+    this.requestMovePage("next");
   }
 
   // Request to transition to the previous image
   requestMovePrev = () => {
-    this.requestMove("prev");
+    this.requestMovePage("prev");
   }
 
   render() {
     const {
-      animationDisabled,
-      animationDuration,
       discourageDownloads,
       enableZoom,
-      imageTitle,
-      nextSrc,
-      prevSrc,
       toolbarButtons,
-      imageCrossOrigin,
       loader,
       footer,
       showToolbar,
-      // images,
-      // activeImage,
+      // Scroller props
+      animationDisabled,
+      animationDuration,
+      images,
+      activeIndex,
+      loadAhead,
     } = this.props;
     const {
       zoomLevel,
@@ -1244,155 +1232,33 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
       loadErrorStatus,
     } = this.state;
 
-    // TODO finish scroller animation
-    const scrollerTransitionStyle: CSSProperties = {
-      transform: "translate3d(-100%, 0, 0)",
-    };
-
     const imageTransitionStyle: CSSProperties = {};
 
-    if (!animationDisabled) {
-      scrollerTransitionStyle.transition = `transform ${animationDuration}ms`;
-    }
-
     // Transition settings for sliding animations
-    if (!animationDisabled && this.isAnimating()) {
-      // scrollerTransitionStyle.transform = "translate3d(-200%, 0, 0)";
+    if (!animationDisabled && this.isAnimatingSnap()) {
       imageTransitionStyle.transition = `transform ${animationDuration}ms`;
     }
 
-    // Key endings to differentiate between images with the same src
-    const keyEndings: { [key in LightboxSrcType]?: string } = {};
-    this.getSrcTypes().forEach(({name, keyEnding}) => {
-      keyEndings[name] = keyEnding;
+    const scrollerImages: RILScrollerImage[] = images.map((img, index) => {
+      const shouldLoad = this.loadableIndexes.includes(index);
+      const object = loadErrorStatus as LightboxLoadErrorStatus;
+
+      const hasError = IMAGE_KEYS.some((key) => {
+        const imgKey = `${key}-${index}` as LightboxSrcType;
+        return object[imgKey];
+      });
+
+      return {
+        ...img,
+        shouldLoad,
+        hasError,
+        errorMessage: hasError && this.props.imageLoadErrorMessage,
+      };
     });
-
-    // Images to be displayed
-    const imageElements: ReactNode[] = [];
-    const addImage = (srcType: LightboxSrcType, imageClass: string, transforms: Partial<LightboxTransform> = {}) => {
-      // Ignore types that have no source defined for their full size image
-      if (!this.props[srcType])
-        return;
-
-      const bestImageInfo = this.getBestImageForType(srcType);
-
-      const imageStyle: CSSProperties = {
-        ...imageTransitionStyle,
-        ...ReactImageLightbox.getTransform({
-          ...transforms,
-          // ...bestImageInfo,
-        }),
-      };
-
-      if (zoomLevel > MIN_ZOOM_LEVEL) {
-        imageStyle.cursor = "move";
-      }
-
-      // support IE 9 and 11
-      const hasTrueValue = (object: LightboxLoadErrorStatus) => {
-        const keys = Object.keys(object) as LightboxSrcType[];
-        return keys.some(key => object[key]);
-      };
-
-      let imageSrc = this.props[srcType] ?? "";
-      // when error on one of the loads then push custom error stuff
-      if (!bestImageInfo && hasTrueValue(loadErrorStatus)) {
-        imageElements.push(
-          <div
-            className={classNames(
-              "ril-image-wrapper",
-              "ril-errored",
-              imageClass
-            )}
-            style={imageStyle}
-            key={imageSrc + keyEndings[srcType]}
-          >
-            <div className="ril-error-container">
-              {this.props.imageLoadErrorMessage}
-            </div>
-          </div>
-        );
-
-        return;
-      }
-
-      if (!bestImageInfo) {
-        const loadingIcon = loader !== undefined ? loader : <Loader />;
-
-        // Fall back to loading icon if the thumbnail has not been loaded
-        imageElements.push(
-          <div
-            className={classNames(
-              "ril-image-wrapper",
-              "ril-not-loaded",
-              imageClass
-            )}
-            style={imageStyle}
-            key={imageSrc + keyEndings[srcType]}
-          >
-            <div className="ril-loading-container">{loadingIcon}</div>
-          </div>
-        );
-
-        return;
-      }
-
-      imageSrc = bestImageInfo.src ?? "";
-      if (discourageDownloads) {
-        imageStyle.backgroundImage = `url('${imageSrc}')`;
-        imageElements.push(
-          <div
-            className={classNames(
-              "ril-image-wrapper",
-              "ril-image-discourager",
-              imageClass
-            )}
-            onDoubleClick={this.handleImageDoubleClick}
-            onWheel={this.handleImageMouseWheel}
-            style={imageStyle}
-            key={imageSrc + keyEndings[srcType]}
-          >
-            <div className="ril-download-blocker" />
-          </div>
-        );
-      } else {
-        imageElements.push(
-          <div
-            key={imageSrc + keyEndings[srcType]}
-            className={classNames("ril-image-wrapper")}
-            ref={
-              imageClass.includes("ril-image-current")
-                ? this.currentEl
-                : undefined
-            }
-            style={imageStyle}
-            onDoubleClick={this.handleImageDoubleClick}
-            onWheel={this.handleImageMouseWheel}
-            onDragStart={stopEvent}
-          >
-            <img
-              className={classNames("ril-image", imageClass)}
-              {...(imageCrossOrigin ? {crossOrigin: imageCrossOrigin} : {})}
-              src={imageSrc}
-              alt={typeof imageTitle === "string" ? imageTitle : "Image"}
-              draggable={false}
-            />
-          </div>
-        );
-      }
-    };
 
     const zoomMultiplier = this.getZoomMultiplier();
-    // Next Image (displayed on the right)
-    addImage("nextSrc", "ril-image-next");
-    // Main Image
-    addImage("mainSrc", "ril-image-current", {
-      x: -1 * offsetX,
-      y: -1 * offsetY,
-      zoom: zoomMultiplier,
-    });
-    // Previous Image (displayed on the left)
-    addImage("prevSrc", "ril-image-prev");
+
+    const activeImage = images.length > 0 ? images[Math.max(activeIndex, images.length - 1)] : undefined;
 
     return (
       <div // eslint-disable-line jsx-a11y/no-static-element-interactions
@@ -1422,7 +1288,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
         {showToolbar && <div className={classNames("ril-toolbar", this.props.toolbarClassName)}>
           <ul className="ril-toolbar-side ril-toolbar-left">
             <li className="ril-toolbar-item">
-              <span className="ril-toolbar-item-child">{imageTitle}</span>
+              <span className="ril-toolbar-item-child">{activeImage?.title}</span>
             </li>
           </ul>
 
@@ -1437,7 +1303,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
                 key="zoom-in"
                 label={this.props.zoomInLabel}
                 className="ril-zoom-in"
-                disabled={this.isAnimating() || zoomLevel === MAX_ZOOM_LEVEL}
+                disabled={this.isAnimatingSnap() || zoomLevel === MAX_ZOOM_LEVEL}
                 onClick={this.handleZoomInButtonClick}
               />
             )}
@@ -1448,7 +1314,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
                 key="zoom-out"
                 label={this.props.zoomOutLabel}
                 className="ril-zoom-out"
-                disabled={this.isAnimating() || zoomLevel === MIN_ZOOM_LEVEL}
+                disabled={this.isAnimatingSnap() || zoomLevel === MIN_ZOOM_LEVEL}
                 onClick={this.handleZoomOutButtonClick}
               />
             )}
@@ -1457,36 +1323,54 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
               key="close"
               label={this.props.closeLabel}
               className="ril-close"
-              disabled={this.isAnimating()}
+              disabled={this.isAnimatingSnap()}
               onClick={this.requestClose}
             />
           </ul>
         </div>}
 
-        <div className={classNames("ril-inner", this.props.innerClassName)} style={scrollerTransitionStyle}>
-          <div className="ril-test">{imageElements}</div>
-        </div>
+        <Scroller
+          key="scroller"
+          ref={this.currentEl}
+          className={this.props.innerClassName}
+          images={scrollerImages}
+          {...{
+            x: -1 * offsetX,
+            y: -1 * offsetY,
+            zoom: zoomMultiplier,
+          }}
+          isSnapAnimating={!animationDisabled && this.isAnimatingSnap()}
+          onImageDoubleClick={this.handleImageDoubleClick}
+          onImageWheel={this.handleImageMouseWheel}
+          getBestImageForType={this.getBestImageForType}
+          loader={loader}
+          activeIndex={activeIndex}
+          loadAhead={loadAhead}
+          animationDuration={animationDuration}
+          animationDisabled={animationDisabled}
+          discourageDownloads={discourageDownloads}
+        />
 
         {footer && <div className={classNames("ril-bottom-bar", this.props.footerClassName)}>
           {footer}
         </div>}
 
-        {prevSrc && <button
+        {this.getPrevSrc() && <button
           type="button"
           className="ril-nav-buttons ril-prev-button"
           key="prev"
           aria-label={this.props.prevLabel}
           title={this.props.prevLabel}
-          onClick={!this.isAnimating() ? this.requestMovePrev : undefined} // Ignore clicks during animation
+          onClick={!this.isAnimatingSnap() ? this.requestMovePrev : undefined} // Ignore clicks during animation
         />}
 
-        {nextSrc && <button
+        {this.getNextSrc() && <button
           type="button"
           className="ril-nav-buttons ril-next-button"
           key="next"
           aria-label={this.props.nextLabel}
           title={this.props.nextLabel}
-          onClick={!this.isAnimating() ? this.requestMoveNext : undefined} // Ignore clicks during animation
+          onClick={!this.isAnimatingSnap() ? this.requestMoveNext : undefined} // Ignore clicks during animation
         />}
       </div>
     );

@@ -1,43 +1,83 @@
 import {mount} from "enzyme";
 import React from "react";
 import Lightbox from "../index";
-import {getHighestSafeWindowContext} from "../util";
-import {MAX_ZOOM_LEVEL, MIN_ZOOM_LEVEL, ZOOM_BUTTON_INCREMENT_SIZE,} from "../constant";
+import {getHighestSafeWindowContext, loadableIndexes} from "../util";
+import {KEYS, MAX_ZOOM_LEVEL, MIN_ZOOM_LEVEL, ZOOM_BUTTON_INCREMENT_SIZE} from "../constant";
 
 // Mock the loadStyles static function to avoid
 // issues with a lack of styles._insertCss
 Lightbox.loadStyles = jest.fn();
 
+const imageOne = [
+  {
+    full: "/fake/image/src.jpg",
+  }
+];
+
+const imageMulti = [
+  {
+    full: "/fake/image/src1.jpg",
+  },
+  ...imageOne,
+  {
+    full: "/fake/image/src2.jpg",
+    title: "Some title"
+  },
+];
+
 const commonProps = {
-  mainSrc: "/fake/image/src.jpg",
+  images: imageMulti,
+  activeIndex: 0,
   onCloseRequest: () => {
   },
 };
 
 const extendedCommonProps = {
   ...commonProps,
-  prevSrc: "/fake/image/src1.jpg",
-  nextSrc: "/fake/image/src2.jpg",
+  images: imageMulti,
+  activeIndex: 1,
 };
 
 describe("Lightbox structure", () => {
   const wrapper = mount(<Lightbox {...commonProps} />);
 
-  it("does not contain prev button when no prevSrc supplied", () => {
+  it("does not contain prev button when infiniteScrolling is disabled and image is first active", () => {
+    wrapper.setProps({infiniteScrolling: false, activeIndex: 0});
     expect(wrapper.find(".ril-prev-button").length).toEqual(0);
   });
 
-  it("contains prev button when prevSrc supplied", () => {
-    wrapper.setProps({prevSrc: "/my/prev/src"});
+  it("contains prev button when when infiniteScrolling is disabled and image is NOT first active", () => {
+    wrapper.setProps({infiniteScrolling: false, activeIndex: 1});
     expect(wrapper.find(".ril-prev-button").length).toEqual(1);
   });
 
-  it("does not contain next button when no nextSrc supplied", () => {
+  it("contains prev button when infiniteScrolling is enabled and image is first active", () => {
+    wrapper.setProps({infiniteScrolling: true, activeIndex: 0});
+    expect(wrapper.find(".ril-prev-button").length).toEqual(1);
+  });
+
+  it("contains prev button when infiniteScrolling is enabled and image is NOT first active", () => {
+    wrapper.setProps({infiniteScrolling: true, activeIndex: 1});
+    expect(wrapper.find(".ril-prev-button").length).toEqual(1);
+  });
+
+  it("does not contain next button when infiniteScrolling is disabled and image is last active", () => {
+    wrapper.setProps({infiniteScrolling: false, activeIndex: commonProps.images.length - 1});
     expect(wrapper.find(".ril-next-button").length).toEqual(0);
   });
 
-  it("contains next button when nextSrc supplied", () => {
-    wrapper.setProps({nextSrc: "/my/next/src"});
+  it("contains next button when when infiniteScrolling is disabled and image is NOT last active", () => {
+    wrapper.setProps({infiniteScrolling: false, activeIndex: commonProps.images.length - 2});
+    expect(wrapper.find(".ril-next-button").length).toEqual(1);
+  });
+
+  it("contains next button when infiniteScrolling is enabled and image is last active", () => {
+    wrapper.setProps({infiniteScrolling: true, activeIndex: commonProps.images.length - 1});
+    expect(wrapper.find(".ril-next-button").length).toEqual(1);
+  });
+
+  it("contains next button when infiniteScrolling is enabled and image is NOT first active", () => {
+    wrapper.setProps({infiniteScrolling: true, activeIndex: commonProps.images.length - 2});
     expect(wrapper.find(".ril-next-button").length).toEqual(1);
   });
 
@@ -80,22 +120,23 @@ describe("Lightbox structure", () => {
   });
 
   it("contains image title when supplied", () => {
-    wrapper.setProps({
-      imageTitle: <div className="my-image-title" />,
-    });
+    const imageWithTitle = imageMulti.findIndex(x => x.title);
+    wrapper.setProps({activeIndex: imageWithTitle});
 
     expect(
-      wrapper.find(".ril-toolbar-left .ril-toolbar-item-child .my-image-title")
-        .length
-    ).toEqual(1);
+      wrapper.find(".ril-toolbar-left .ril-toolbar-item-child").text()
+    ).toEqual("Some title");
   });
 });
 
 describe("Events", () => {
   const LOAD_FAILURE_SRC = "LOAD_FAILURE_SRC";
   const LOAD_SUCCESS_SRC = "LOAD_SUCCESS_SRC";
+
   let originalImageSrcProto;
   beforeAll(() => {
+    jest.useRealTimers();
+
     originalImageSrcProto = Object.getOwnPropertyDescriptor(
       global.Image.prototype,
       "src"
@@ -155,29 +196,30 @@ describe("Events", () => {
   });
 
   it("Calls onImageLoad when image loaded", done => {
-    mockFns.onImageLoad.mockImplementationOnce((imageSrc, srcType, image) => {
+    mockFns.onImageLoad.mockImplementationOnce((imageSrc, srcType, index, image) => {
       expect(imageSrc).toEqual(LOAD_SUCCESS_SRC);
-      expect(srcType).toEqual("mainSrc");
+      expect(srcType).toEqual("full-0");
+      expect(index).toEqual(0);
       expect(image).toBeInstanceOf(global.Image);
       done();
     });
 
     expect(mockFns.onImageLoad).toHaveBeenCalledTimes(0);
-    wrapper.setProps({mainSrc: LOAD_SUCCESS_SRC});
+    wrapper.setProps({images: [{full: LOAD_SUCCESS_SRC}], activeIndex: 0});
   });
 
   it("Calls onImageLoadError when image loaded", done => {
-    mockFns.onImageLoadError.mockImplementationOnce(
-      (imageSrc, srcType, image) => {
-        expect(imageSrc).toEqual(LOAD_FAILURE_SRC);
-        expect(srcType).toEqual("mainSrc");
-        expect(image).toBeInstanceOf(Error);
-        done();
-      }
+    mockFns.onImageLoadError.mockImplementationOnce((imageSrc, srcType, index, image) => {
+      expect(imageSrc).toEqual(LOAD_FAILURE_SRC);
+      expect(srcType).toEqual("full-0");
+      expect(index).toEqual(0);
+      expect(image).toBeInstanceOf(Error);
+      done();
+    }
     );
 
     expect(mockFns.onImageLoadError).toHaveBeenCalledTimes(0);
-    wrapper.setProps({mainSrc: LOAD_FAILURE_SRC});
+    wrapper.setProps({images: [{full: LOAD_FAILURE_SRC}], activeIndex: 0});
   });
 
   it("Calls the the ZoomIn Focus when ZoomOut is disabled", () => {
@@ -214,44 +256,66 @@ describe("Key bindings", () => {
   const simulateKey = key => {
     // Avoid interference by key throttling
     wrapper.instance().lastKeyDownTime = new Date("1970-01-01").getTime();
-    wrapper.setProps({animationOnKeyInput: false});
 
     wrapper.find(".ril-outer").simulate("keyDown", {key});
   };
 
   it("Responds to close key binding", () => {
-    expect(mockCloseRequest).toHaveBeenCalledTimes(0);
+    jest.useFakeTimers();
+    expect(mockCloseRequest).not.toBeCalled();
+
     // Simulate ESC key press
-    simulateKey("Escape");
-    expect(mockCloseRequest).toHaveBeenCalledTimes(1);
+    simulateKey(KEYS.ESC);
+    expect(mockCloseRequest).not.toBeCalled();
+
+    // Fast-forward until all timers have been executed
+    jest.runAllTimers();
+
+    expect(mockCloseRequest).toBeCalled();
   });
 
   it('Doesn\'t respond to "move to next" key binding when no next image available', () => {
+    wrapper.setProps({infiniteScrolling: false, activeIndex: commonProps.images.length - 1});
+
+    expect(mockMoveNextRequest).not.toBeCalled();
+
     // Simulate right arrow key press
-    simulateKey("ArrowRight");
-    expect(mockMoveNextRequest).toHaveBeenCalledTimes(0);
+    simulateKey(KEYS.RIGHT_ARROW);
+
+    expect(mockMoveNextRequest).not.toBeCalled();
   });
 
   it('Responds to "move to next" key binding when next image available', () => {
-    wrapper.setProps({nextSrc: "/my/next/src"});
+    wrapper.setProps({infiniteScrolling: false, activeIndex: commonProps.images.length - 2});
+
+    expect(mockMoveNextRequest).not.toBeCalled();
 
     // Simulate right arrow key press
-    simulateKey("ArrowRight");
-    expect(mockMoveNextRequest).toHaveBeenCalledTimes(1);
+    simulateKey(KEYS.RIGHT_ARROW);
+
+    expect(mockMoveNextRequest).toBeCalled();
   });
 
   it('Doesn\'t respond to "move to prev" key binding when no prev image available', () => {
+    wrapper.setProps({infiniteScrolling: false, activeIndex: 0});
+
+    expect(mockMovePrevRequest).not.toBeCalled();
+
     // Simulate left arrow key press
-    simulateKey("ArrowLeft");
-    expect(mockMovePrevRequest).toHaveBeenCalledTimes(0);
+    simulateKey(KEYS.LEFT_ARROW);
+
+    expect(mockMovePrevRequest).not.toBeCalled();
   });
 
   it('Responds to "move to prev" key binding', () => {
-    wrapper.setProps({prevSrc: "/my/prev/src"});
+    wrapper.setProps({infiniteScrolling: false, activeIndex: commonProps.images.length - 1});
+
+    expect(mockMovePrevRequest).not.toBeCalled();
 
     // Simulate left arrow key press
-    simulateKey("ArrowLeft");
-    expect(mockMovePrevRequest).toHaveBeenCalledTimes(1);
+    simulateKey(KEYS.LEFT_ARROW);
+
+    expect(mockMovePrevRequest).toBeCalled();
   });
 });
 
@@ -266,26 +330,22 @@ describe("Error Testing", () => {
   it("Should render the default error message", () => {
     const wrapper = mount(<Lightbox {...commonProps} />);
     wrapper.setState({
-      loadErrorStatus: {mainSrc: true},
+      loadErrorStatus: {"full-0": true},
     });
     wrapper.update();
-    expect(wrapper.find("div.ril-error-container")).toHaveText(
-      "This image failed to load"
-    );
+    expect(wrapper.find("div.ril-error-container").at(0)).toHaveText("This image failed to load");
   });
   it("Should render the specified error message", () => {
     const wrapper = mount(<Lightbox {...commonProps} />);
     const imageLoadErrorMessage = <p>Specified Error Message</p>;
     wrapper.setState({
-      loadErrorStatus: {mainSrc: true},
+      loadErrorStatus: {"full-0": true},
     });
     wrapper.setProps({
       imageLoadErrorMessage,
     });
     wrapper.update();
-    expect(wrapper.find("div.ril-error-container")).toContainReact(
-      imageLoadErrorMessage
-    );
+    expect(wrapper.find("div.ril-error-container").at(0)).toContainReact(imageLoadErrorMessage);
   });
 });
 
@@ -297,6 +357,25 @@ describe("Utils", () => {
     };
     expect(getHighestSafeWindowContext(self)).toBe(global.window.top);
   });
+
+  it("does not generate indexes behind 0 when infinite scrolling is disabled", () => {
+    const result = loadableIndexes(10, 0, 3, false);
+
+    expect(result).toEqual([0, 1, 2, 3]);
+  });
+
+  it("does generate indexes behind 0 when infinite scrolling is enabled", () => {
+    const result = loadableIndexes(10, 0, 3, true);
+
+    expect(result).toEqual([7, 8, 9, 0, 1, 2, 3]);
+  });
+
+  it("return empty array when searched index is outside of array bounds", () => {
+    const result = loadableIndexes(5, 10, 3, true);
+
+    expect(result).toEqual([]);
+  });
+
   it.skip("getHighestSafeWindowContext function if parent is a different origin", () => {
     const self = {
       location: {href: "http://test1.test"},

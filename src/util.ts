@@ -33,3 +33,36 @@ export const getHighestSafeWindowContext = (self: Window = global.window.self): 
 export const stopEvent = (e: SyntheticEvent) => {
   e.preventDefault();
 };
+
+export const loadableIndexes = (
+  length: number,
+  activeIndex: number,
+  maxLoadAhead: number,
+  infiniteScrolling: boolean,
+): number[] => {
+  maxLoadAhead = Math.min(maxLoadAhead, length);
+
+  // We start from 1 then reduce it by 1
+  // Because we cannot have negative and positive 0
+  let base = Array.from({length}, (v, idx) => idx + 1);
+  if (infiniteScrolling) {
+    const negativeBase = base.map(x => -x);
+    base = [
+      ...negativeBase,
+      ...base,
+      ...negativeBase,
+    ];
+  }
+
+  const pos = base.indexOf(activeIndex + 1);
+  if (pos < 0)
+    return [];
+
+  const start = Math.max(pos - maxLoadAhead, 0);
+  const end = Math.min(pos + maxLoadAhead, base.length) + 1;
+
+  return base
+    .slice(start, end)
+    .map(x => Math.abs(x) - 1)
+    .filter((v, i, a) => a.indexOf(v) === i);
+};

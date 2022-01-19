@@ -15,6 +15,7 @@ yarn-error.log
 *.sublime-*
 .idea/
 *.DS_Store
+.run
 
 # Build directories (Will be preserved by npm)
 dist

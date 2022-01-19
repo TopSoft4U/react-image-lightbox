@@ -9,9 +9,17 @@ export type LightboxTransform = LightboxXY & {
   zoom: number;
 }
 
-export interface ILightBoxImageProps {
-  full?: string;
+export type RILImageProps = {
+  full: string;
   thumbnail?: string;
+  title?: ReactNode;
+  crossOrigin?: ImgHTMLAttributes<HTMLImageElement>["crossOrigin"];
+}
+
+export type RILScrollerImage = RILImageProps & {
+  hasError: boolean;
+  shouldLoad: boolean;
+  errorMessage?: ReactNode;
 }
 
 export type LightboxPointer = LightboxXY & {
@@ -19,7 +27,8 @@ export type LightboxPointer = LightboxXY & {
   source?: number,
 }
 
-export type LightboxSrcType = "mainSrc" | "mainSrcThumbnail" | "nextSrc" | "nextSrcThumbnail" | "prevSrc" | "prevSrcThumbnail";
+export type LightboxSrcTypeKey = keyof Pick<RILImageProps, "full" | "thumbnail">;
+export type LightboxSrcType = `${LightboxSrcTypeKey}-${number}`;
 
 export type LightboxImageCacheItem = {
   loaded: boolean,
@@ -27,31 +36,10 @@ export type LightboxImageCacheItem = {
   height: number,
 }
 
+export type ReactImageLightboxGenerateLoadError = (err?: any) => void;
+export type ReactImageLightboxGenerateLoadDoneCallback = (type: LightboxSrcType, index: number, imageSrc: string) => ReactImageLightboxGenerateLoadError;
+
 export type ReactImageLightboxProps = {
-  // -----------------------------
-  // Image sources
-  // -----------------------------
-
-  // Main display image url
-  mainSrc: string;
-  // Previous display image url (displayed to the left)
-  // If left undefined, movePrev actions will not be performed, and the button not displayed
-  prevSrc?: string;
-  // Next display image url (displayed to the right)
-  // If left undefined, moveNext actions will not be performed, and the button not displayed
-  nextSrc?: string;
-
-  // -----------------------------
-  // Image thumbnail sources
-  // -----------------------------
-
-  // Thumbnail image url corresponding to props.mainSrc
-  mainSrcThumbnail?: string;
-  // Thumbnail image url corresponding to props.prevSrc
-  prevSrcThumbnail?: string;
-  // Thumbnail image url corresponding to props.nextSrc
-  nextSrcThumbnail?: string;
-
   // -----------------------------
   // Event Handlers
   // -----------------------------
@@ -69,9 +57,9 @@ export type ReactImageLightboxProps = {
   onMoveNextRequest?(): void;
   // Called when an image fails to load
   // (imageSrc: string, srcType: string, errorEvent: object): void
-  onImageLoadError?(imageSrc: string, srcType: string, event: string | Event): void;
+  onImageLoadError?(imageSrc: string, type: LightboxSrcType, index: number, event: string | Event): void;
   // Called when image successfully loads
-  onImageLoad?(imageSrc: string, srcType: string, element: HTMLImageElement): void;
+  onImageLoad?(imageSrc: string, type: LightboxSrcType, index: number, element: HTMLImageElement): void;
 
   // -----------------------------
   // Download discouragement settings
@@ -86,8 +74,6 @@ export type ReactImageLightboxProps = {
 
   // Disable all animation
   animationDisabled?: boolean;
-  // Disable animation on actions performed with keyboard shortcuts
-  animationOnKeyInput?: boolean;
   // Animation duration (ms)
   animationDuration: number;
 
@@ -105,11 +91,6 @@ export type ReactImageLightboxProps = {
   // -----------------------------
   // Image info
   // -----------------------------
-
-  // Image title
-  imageTitle?: ReactNode;
-  // Optional crossOrigin attribute
-  imageCrossOrigin?: ImgHTMLAttributes<HTMLImageElement>["crossOrigin"];
 
   // -----------------------------
   // Lightbox style
@@ -151,8 +132,10 @@ export type ReactImageLightboxProps = {
   innerClassName?: string;
   footerClassName?: string;
 
-  images: ILightBoxImageProps[];
-  activeImage: number;
+  images: RILImageProps[];
+  activeIndex: number;
+  loadAhead: number;
+  infiniteScrolling: boolean;
 }
 
 export type LightboxLoadErrorStatus = {
@@ -161,7 +144,7 @@ export type LightboxLoadErrorStatus = {
 
 export type ReactImageLightboxState = {
   isClosing?: boolean;
-  shouldAnimate?: boolean;
+  shouldAnimateSnap?: boolean;
   zoomLevel: number;
 
   offsetX: number;
@@ -169,3 +152,11 @@ export type ReactImageLightboxState = {
 
   loadErrorStatus: LightboxLoadErrorStatus;
 }
+
+export type RILBestImageForType = {
+  targetHeight: number;
+  src: string;
+  width: number;
+  height: number;
+  targetWidth: number;
+};

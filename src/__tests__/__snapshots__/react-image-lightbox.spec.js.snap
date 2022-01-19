@@ -2,18 +2,33 @@
 
 exports[`Snapshot Testing Lightbox renders properly" 1`] = `
 <ReactImageLightbox
+  activeIndex={0}
   animationDisabled={false}
   animationDuration={300}
-  animationOnKeyInput={true}
   clickOutsideToClose={true}
   closeLabel="Close lightbox"
   discourageDownloads={false}
   enableZoom={true}
   imageLoadErrorMessage="This image failed to load"
   imagePadding={10}
+  images={
+    Array [
+      Object {
+        "full": "/fake/image/src1.jpg",
+      },
+      Object {
+        "full": "/fake/image/src.jpg",
+      },
+      Object {
+        "full": "/fake/image/src2.jpg",
+        "title": "Some title",
+      },
+    ]
+  }
+  infiniteScrolling={true}
   keyRepeatKeyupBonus={40}
   keyRepeatLimit={180}
-  mainSrc="/fake/image/src.jpg"
+  loadAhead={1}
   nextLabel="Next image"
   onCloseRequest={[Function]}
   prevLabel="Previous image"
@@ -50,7 +65,9 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
         >
           <span
             className="ril-toolbar-item-child"
-          />
+          >
+            Some title
+          </span>
         </li>
       </ul>
       <ul
@@ -120,59 +137,199 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
         </ForwardRef>
       </ul>
     </div>
-    <div
-      className="ril-inner"
-      style={
-        Object {
-          "transform": "translate3d(-100%, 0, 0)",
-          "transition": "transform 300ms",
-        }
+    <ForwardRef
+      activeIndex={0}
+      animationDisabled={false}
+      animationDuration={300}
+      discourageDownloads={false}
+      getBestImageForType={[Function]}
+      images={
+        Array [
+          Object {
+            "errorMessage": false,
+            "full": "/fake/image/src1.jpg",
+            "hasError": false,
+            "shouldLoad": true,
+          },
+          Object {
+            "errorMessage": false,
+            "full": "/fake/image/src.jpg",
+            "hasError": false,
+            "shouldLoad": true,
+          },
+          Object {
+            "errorMessage": false,
+            "full": "/fake/image/src2.jpg",
+            "hasError": false,
+            "shouldLoad": true,
+            "title": "Some title",
+          },
+        ]
       }
+      isSnapAnimating={false}
+      key="scroller"
+      loadAhead={1}
+      onImageDoubleClick={[Function]}
+      onImageWheel={[Function]}
+      x={-0}
+      y={-0}
+      zoom={1}
     >
       <div
-        className="ril-test"
+        className="ril-inner"
+        style={
+          Object {
+            "transform": "translate3d(0%, 0, 0)",
+            "transition": "transform 300ms",
+          }
+        }
       >
         <div
-          className="ril-image-wrapper ril-not-loaded ril-image-current"
-          key="/fake/image/src.jpgi0"
-          style={
-            Object {
-              "transform": "translate3d(0px,0px,0) scale3d(1,1,1)",
-            }
-          }
+          className="ril-test"
         >
           <div
-            className="ril-loading-container"
+            className="ril-image-wrapper ril-not-loaded"
+            key="/fake/image/src1.jpg-0"
+            onDoubleClick={[Function]}
+            onDragStart={[Function]}
+            onWheel={[Function]}
+            style={
+              Object {
+                "backgroundImage": undefined,
+                "transform": "translate3d(0px,0px,0) scale3d(1,1,1)",
+                "transition": undefined,
+              }
+            }
           >
-            <Loader>
-              <div
-                className="ril-loader"
-              >
-                <svg
-                  className="svg-container"
-                  height="100"
-                  viewBox="0 0 100 100"
-                  width="100"
+            <div
+              className="ril-loading-container"
+            >
+              <Loader>
+                <div
+                  className="ril-loader"
                 >
-                  <circle
-                    className="ril-loader-svg ril-loader-bg"
-                    cx="50"
-                    cy="50"
-                    r="45"
-                  />
-                  <circle
-                    className="ril-loader-svg ril-loader-animate"
-                    cx="50"
-                    cy="50"
-                    r="45"
-                  />
-                </svg>
-              </div>
-            </Loader>
+                  <svg
+                    className="svg-container"
+                    height="100"
+                    viewBox="0 0 100 100"
+                    width="100"
+                  >
+                    <circle
+                      className="ril-loader-svg ril-loader-bg"
+                      cx="50"
+                      cy="50"
+                      r="45"
+                    />
+                    <circle
+                      className="ril-loader-svg ril-loader-animate"
+                      cx="50"
+                      cy="50"
+                      r="45"
+                    />
+                  </svg>
+                </div>
+              </Loader>
+            </div>
+          </div>
+          <div
+            className="ril-image-wrapper ril-not-loaded"
+            key="/fake/image/src.jpg-0"
+            onDragStart={[Function]}
+            style={
+              Object {
+                "backgroundImage": undefined,
+              }
+            }
+          >
+            <div
+              className="ril-loading-container"
+            >
+              <Loader>
+                <div
+                  className="ril-loader"
+                >
+                  <svg
+                    className="svg-container"
+                    height="100"
+                    viewBox="0 0 100 100"
+                    width="100"
+                  >
+                    <circle
+                      className="ril-loader-svg ril-loader-bg"
+                      cx="50"
+                      cy="50"
+                      r="45"
+                    />
+                    <circle
+                      className="ril-loader-svg ril-loader-animate"
+                      cx="50"
+                      cy="50"
+                      r="45"
+                    />
+                  </svg>
+                </div>
+              </Loader>
+            </div>
+          </div>
+          <div
+            className="ril-image-wrapper ril-not-loaded"
+            key="/fake/image/src2.jpg-0"
+            onDragStart={[Function]}
+            style={
+              Object {
+                "backgroundImage": undefined,
+              }
+            }
+          >
+            <div
+              className="ril-loading-container"
+            >
+              <Loader>
+                <div
+                  className="ril-loader"
+                >
+                  <svg
+                    className="svg-container"
+                    height="100"
+                    viewBox="0 0 100 100"
+                    width="100"
+                  >
+                    <circle
+                      className="ril-loader-svg ril-loader-bg"
+                      cx="50"
+                      cy="50"
+                      r="45"
+                    />
+                    <circle
+                      className="ril-loader-svg ril-loader-animate"
+                      cx="50"
+                      cy="50"
+                      r="45"
+                    />
+                  </svg>
+                </div>
+              </Loader>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </ForwardRef>
+    <button
+      aria-label="Previous image"
+      className="ril-nav-buttons ril-prev-button"
+      key="prev"
+      onClick={[Function]}
+      title="Previous image"
+      type="button"
+    />
+    <button
+      aria-label="Next image"
+      className="ril-nav-buttons ril-next-button"
+      key="next"
+      onClick={[Function]}
+      title="Next image"
+      type="button"
+    />
   </div>
 </ReactImageLightbox>
 `;

@@ -1,4 +1,6 @@
 // Min image zoom level
+import {LightboxSrcTypeKey} from "src/types";
+
 export const MIN_ZOOM_LEVEL = 0;
 
 // Max image zoom level
@@ -21,6 +23,8 @@ export const KEYS = {
   LEFT_ARROW: "ArrowLeft",
   RIGHT_ARROW: "ArrowRight",
 };
+
+export const IMAGE_KEYS = ["full", "thumbnail"] as LightboxSrcTypeKey[];
 
 // Actions
 export const ACTION_NONE = 0;

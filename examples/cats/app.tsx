@@ -89,24 +89,18 @@ const App = () => {
   const lightbox = <Modal fullscreen show={isOpen} onHide={closeLightbox}>
     <Modal.Body>
       <Lightbox
-        images={images.map((img, i) => ({full: img, thumbnail: thumbs[i]}))}
-        // imageCount={images.length}
-        activeImage={index}
-        mainSrc={images[index]}
-        nextSrc={images[(index + 1) % images.length]}
-        prevSrc={
-          images[(index + images.length - 1) % images.length]
-        }
-        mainSrcThumbnail={thumbs[index]}
-        nextSrcThumbnail={thumbs[(index + 1) % images.length]}
-        prevSrcThumbnail={
-          thumbs[(index + images.length - 1) % images.length]
-        }
+        images={images.map((img, i) => ({
+          full: img,
+          thumbnail: thumbs[i],
+          title: titles[index],
+        }))}
+        activeIndex={index}
         onCloseRequest={closeLightbox}
         onMovePrevRequest={movePrev}
         onMoveNextRequest={moveNext}
         onImageLoadError={onImageLoadError}
-        imageTitle={titles[index]}
+        infiniteScrolling={true}
+        discourageDownloads={true}
         footer={<div style={{height: "50px"}} />}
       />
     </Modal.Body>
