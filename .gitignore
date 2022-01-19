@@ -1,6 +1,10 @@
 node_modules
 coverage
 npm-debug.log
+yarn-error.log
+*.tsbuildinfo
+!examples/cats/declaration.d.ts
+*.d.ts
 
 # Editor and other tmp files
 *.swp
@@ -18,3 +22,5 @@ build
 /style.css
 /style.css.map
 .cache
+.parcel-cache
+.rollup.cache

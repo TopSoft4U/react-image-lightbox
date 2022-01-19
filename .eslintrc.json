@@ -1,15 +1,16 @@
 {
-  "extends": ["airbnb", "prettier", "prettier/react"],
-  "env": {
-    "browser": true,
-    "jest": true
-  },
+  "extends": [
+    "@topsoft4u"
+  ],
   "rules": {
-    "jsx-a11y/control-has-associated-label": 0,
-    "react/destructuring-assignment": 0,
-    "react/jsx-filename-extension": 0,
-    "react/jsx-props-no-spreading": 0,
-    "react/prop-types": 0,
-    "react/sort-comp": 0
+    "no-undef": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "react/no-danger": "off",
+    "react-perf/jsx-no-new-object-as-prop": "off"
+//    "jsx-a11y/anchor-is-valid": [ "error", {
+//      "components": [ "Link" ],
+//      "specialLink": [ "hrefLeft", "hrefRight" ],
+//      "aspects": [ "invalidHref", "preferButton" ]
+//    }]
   }
 }

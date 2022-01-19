@@ -9,27 +9,15 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
   closeLabel="Close lightbox"
   discourageDownloads={false}
   enableZoom={true}
-  imageCrossOrigin={null}
   imageLoadErrorMessage="This image failed to load"
   imagePadding={10}
-  imageTitle={null}
   keyRepeatKeyupBonus={40}
   keyRepeatLimit={180}
   mainSrc="/fake/image/src.jpg"
-  mainSrcThumbnail={null}
   nextLabel="Next image"
-  nextSrc={null}
-  nextSrcThumbnail={null}
   onCloseRequest={[Function]}
-  onImageLoad={[Function]}
-  onImageLoadError={[Function]}
-  onMoveNextRequest={[Function]}
-  onMovePrevRequest={[Function]}
   prevLabel="Previous image"
-  prevSrc={null}
-  prevSrcThumbnail={null}
   showToolbar={true}
-  toolbarButtons={null}
   zoomInLabel="Zoom in"
   zoomOutLabel="Zoom out"
 >
@@ -49,7 +37,7 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
         "transition": "opacity 300ms",
       }
     }
-    tabIndex="-1"
+    tabIndex={-1}
   >
     <div
       className="ril-toolbar"

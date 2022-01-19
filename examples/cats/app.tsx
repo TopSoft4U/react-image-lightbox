@@ -1,0 +1,190 @@
+/* eslint-disable import/no-extraneous-dependencies */
+import {useState, useCallback} from "react";
+import {Modal} from "react-bootstrap";
+import {ReactImageLightboxProps} from "src/types";
+import Lightbox from "../../src";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./stylesheets/vendor/stylesheet.css";
+import "./stylesheets/app.css";
+
+import image1 from "./images/1.jpg";
+import image2 from "./images/2.jpg";
+import image3 from "./images/3.jpg";
+import image4 from "./images/4.jpg";
+import image1Thumb from "./images/1_thumb.jpg";
+import image2Thumb from "./images/2_thumb.jpg";
+import image3Thumb from "./images/3_thumb.jpg";
+import image4Thumb from "./images/4_thumb.jpg";
+
+// import Lightbox from 'react-image-lightbox';
+// In your own app, you would need to use import styles once in the app
+// import 'react-image-lightbox/styles.css';
+
+const images = [image1, image2, image3, image4];
+const thumbs = [image1Thumb, image2Thumb, image3Thumb, image4Thumb];
+
+const titles = [
+  "",
+  <span key="title-2">
+    by&nbsp;
+    <a className="creditLink" href="http://flickr.com/photos/titrans/">
+      quatre mains
+    </a>
+    &nbsp; (
+    <a
+      className="creditLink"
+      href="http://creativecommons.org/licenses/by/2.0/"
+      title="Attribution License"
+    >
+      Some rights reserved
+    </a>
+    )
+  </span>,
+  <span key="title-3">
+    by&nbsp;
+    <a className="creditLink" href="http://flickr.com/photos/lachlanrogers/">
+      latch.r
+    </a>
+    &nbsp; (
+    <a
+      className="creditLink"
+      href="http://creativecommons.org/licenses/by-sa/2.0/"
+      title="Attribution-ShareAlike License"
+    >
+      Some rights reserved
+    </a>
+    )
+  </span>,
+  <span key="title-4">
+    by&nbsp;
+    <a className="creditLink" href="http://flickr.com/photos/fazen/">
+      fazen
+    </a>
+    &nbsp; (
+    <a
+      className="creditLink"
+      href="http://creativecommons.org/licenses/by/2.0/"
+      title="Attribution License"
+    >
+      Some rights reserved
+    </a>
+    )
+  </span>,
+];
+
+const onImageLoadError: ReactImageLightboxProps["onImageLoadError"] = (imageSrc, _srcType, errorEvent) => {
+  console.error(`Could not load image at ${imageSrc}`, errorEvent); // eslint-disable-line no-console
+};
+
+const App = () => {
+  const [index, setIndex] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const openLightbox = useCallback(() => setIsOpen(true), []);
+  const closeLightbox = useCallback(() => setIsOpen(false), []);
+
+  const moveNext = useCallback(() => setIndex(prev => (prev + 1) % images.length), []);
+  const movePrev = useCallback(() => setIndex(prev => (prev + images.length - 1) % images.length), []);
+
+  const lightbox = <Modal fullscreen show={isOpen} onHide={closeLightbox}>
+    <Modal.Body>
+      <Lightbox
+        images={images.map((img, i) => ({full: img, thumbnail: thumbs[i]}))}
+        // imageCount={images.length}
+        activeImage={index}
+        mainSrc={images[index]}
+        nextSrc={images[(index + 1) % images.length]}
+        prevSrc={
+          images[(index + images.length - 1) % images.length]
+        }
+        mainSrcThumbnail={thumbs[index]}
+        nextSrcThumbnail={thumbs[(index + 1) % images.length]}
+        prevSrcThumbnail={
+          thumbs[(index + images.length - 1) % images.length]
+        }
+        onCloseRequest={closeLightbox}
+        onMovePrevRequest={movePrev}
+        onMoveNextRequest={moveNext}
+        onImageLoadError={onImageLoadError}
+        imageTitle={titles[index]}
+        footer={<div style={{height: "50px"}} />}
+      />
+    </Modal.Body>
+  </Modal>;
+
+  return <div>
+    <section className="page-header">
+      <h1 className="project-name">React Image Lightbox</h1>
+
+      <h2 className="project-tagline">
+        Flexible lightbox component for displaying images with React
+      </h2>
+    </section>
+
+    <section className="main-content">
+      <h2>Demo</h2>
+
+      <div>
+        <button
+          type="button"
+          id="open-lightbox"
+          className="demoButton"
+          onClick={openLightbox}
+        >
+          Open Lightbox
+        </button>
+        {lightbox}
+      </div>
+
+      <h2>Features</h2>
+      <ul>
+        <li>Keyboard shortcuts (with rate limiting)</li>
+        <li>Image Zoom</li>
+        <li>Flexible rendering using src values assigned on the fly</li>
+        <li>Image preloading for smoother viewing</li>
+        <li>
+          Mobile friendly, with pinch to zoom and swipe (Thanks,{" "}
+          <a href="https://github.com/webcarrot">@webcarrot</a>
+          !)
+        </li>
+      </ul>
+
+      <a href="https://github.com/frontend-collective/react-image-lightbox">
+        Examples and Documentation on Github
+      </a>
+
+      <footer className="site-footer">
+        <span className="site-footer-owner">
+          <a href="https://github.com/frontend-collective/react-image-lightbox">
+                React Image Lightbox
+          </a>{" "}
+          is maintained by{" "}
+          <a href="https://github.com/frontend-collective">
+                Frontend Collective
+          </a>
+              .
+        </span>
+
+        <span className="site-footer-credits">
+              This page was generated by{" "}
+          <a href="https://pages.github.com">GitHub Pages</a> using the{" "}
+          <a href="https://github.com/jasonlong/cayman-theme">
+                Cayman theme
+          </a>{" "}
+          by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </span>
+      </footer>
+    </section>
+
+    <a href="https://github.com/frontend-collective/react-image-lightbox">
+      <img
+        style={{position: "absolute", top: 0, right: 0, border: 0}}
+        src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67"
+        alt="Fork me on GitHub"
+        data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"
+      />
+    </a>
+  </div>;
+};
+
+export default App;

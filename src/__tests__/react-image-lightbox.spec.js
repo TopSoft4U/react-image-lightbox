@@ -1,112 +1,110 @@
-import { mount } from 'enzyme';
-import React from 'react';
-import Lightbox from '../index';
-import { getHighestSafeWindowContext } from '../util';
-import {
-  MAX_ZOOM_LEVEL,
-  MIN_ZOOM_LEVEL,
-  ZOOM_BUTTON_INCREMENT_SIZE,
-} from '../constant';
+import {mount} from "enzyme";
+import React from "react";
+import Lightbox from "../index";
+import {getHighestSafeWindowContext} from "../util";
+import {MAX_ZOOM_LEVEL, MIN_ZOOM_LEVEL, ZOOM_BUTTON_INCREMENT_SIZE,} from "../constant";
 
 // Mock the loadStyles static function to avoid
 // issues with a lack of styles._insertCss
 Lightbox.loadStyles = jest.fn();
 
 const commonProps = {
-  mainSrc: '/fake/image/src.jpg',
-  onCloseRequest: () => {},
+  mainSrc: "/fake/image/src.jpg",
+  onCloseRequest: () => {
+  },
 };
 
 const extendedCommonProps = {
   ...commonProps,
-  prevSrc: '/fake/image/src1.jpg',
-  nextSrc: '/fake/image/src2.jpg',
+  prevSrc: "/fake/image/src1.jpg",
+  nextSrc: "/fake/image/src2.jpg",
 };
 
-describe('Lightbox structure', () => {
+describe("Lightbox structure", () => {
   const wrapper = mount(<Lightbox {...commonProps} />);
 
-  it('does not contain prev button when no prevSrc supplied', () => {
-    expect(wrapper.find('.ril-prev-button').length).toEqual(0);
+  it("does not contain prev button when no prevSrc supplied", () => {
+    expect(wrapper.find(".ril-prev-button").length).toEqual(0);
   });
 
-  it('contains prev button when prevSrc supplied', () => {
-    wrapper.setProps({ prevSrc: '/my/prev/src' });
-    expect(wrapper.find('.ril-prev-button').length).toEqual(1);
+  it("contains prev button when prevSrc supplied", () => {
+    wrapper.setProps({prevSrc: "/my/prev/src"});
+    expect(wrapper.find(".ril-prev-button").length).toEqual(1);
   });
 
-  it('does not contain next button when no nextSrc supplied', () => {
-    expect(wrapper.find('.ril-next-button').length).toEqual(0);
+  it("does not contain next button when no nextSrc supplied", () => {
+    expect(wrapper.find(".ril-next-button").length).toEqual(0);
   });
 
-  it('contains next button when nextSrc supplied', () => {
-    wrapper.setProps({ nextSrc: '/my/next/src' });
-    expect(wrapper.find('.ril-next-button').length).toEqual(1);
+  it("contains next button when nextSrc supplied", () => {
+    wrapper.setProps({nextSrc: "/my/next/src"});
+    expect(wrapper.find(".ril-next-button").length).toEqual(1);
   });
 
-  it('contains zoom buttons when enableZoom is true (default)', () => {
-    expect(wrapper.find('button.ril-zoom-out').length).toEqual(1);
-    expect(wrapper.find('button.ril-zoom-in').length).toEqual(1);
+  it("contains zoom buttons when enableZoom is true (default)", () => {
+    expect(wrapper.find("button.ril-zoom-out").length).toEqual(1);
+    expect(wrapper.find("button.ril-zoom-in").length).toEqual(1);
   });
 
-  it('does not contain zoom buttons when enableZoom is false', () => {
-    wrapper.setProps({ enableZoom: false });
-    expect(wrapper.find('button.ril-zoom-out').length).toEqual(0);
-    expect(wrapper.find('button.ril-zoom-in').length).toEqual(0);
+  it("does not contain zoom buttons when enableZoom is false", () => {
+    wrapper.setProps({enableZoom: false});
+    expect(wrapper.find("button.ril-zoom-out").length).toEqual(0);
+    expect(wrapper.find("button.ril-zoom-in").length).toEqual(0);
   });
 
-  it('does not contain a bottom bar when no footer prop is empty', () => {
-    expect(wrapper.find('.ril-bottom-bar').length).toEqual(0);
+  it("does not contain a bottom bar when no footer prop is empty", () => {
+    expect(wrapper.find(".ril-bottom-bar").length).toEqual(0);
   });
 
-  it('contains a bottom bar when a footer prop is supplied', () => {
-    wrapper.setProps({ footer: <div>test</div> });
-    expect(wrapper.find('.ril-bottom-bar').length).toEqual(1);
+  it("contains a bottom bar when a footer prop is supplied", () => {
+    wrapper.setProps({footer: <div>test</div>});
+    expect(wrapper.find(".ril-bottom-bar").length).toEqual(1);
   });
 
-  it('contains a top bar when showToolbar is true (default)', () => {
-    expect(wrapper.find('.ril-toolbar').length).toEqual(1);
+  it("contains a top bar when showToolbar is true (default)", () => {
+    expect(wrapper.find(".ril-toolbar").length).toEqual(1);
   });
 
-  it('does not contain a top bar when showToolbar is set to false', () => {
-    wrapper.setProps({ showToolbar: false });
-    expect(wrapper.find('.ril-toolbar').length).toEqual(0);
-    wrapper.setProps({ showToolbar: true });
+  it("does not contain a top bar when showToolbar is set to false", () => {
+    wrapper.setProps({showToolbar: false});
+    expect(wrapper.find(".ril-toolbar").length).toEqual(0);
+    wrapper.setProps({showToolbar: true});
   });
 
-  it('contains custom toolbar buttons when supplied', () => {
+  it("contains custom toolbar buttons when supplied", () => {
     wrapper.setProps({
+      // eslint-disable-next-line react/jsx-key
       toolbarButtons: [<button type="button" className="my-test-button" />],
     });
-    expect(wrapper.find('.ril-toolbar-item .my-test-button').length).toEqual(1);
+    expect(wrapper.find(".ril-toolbar-item .my-test-button").length).toEqual(1);
   });
 
-  it('contains image title when supplied', () => {
+  it("contains image title when supplied", () => {
     wrapper.setProps({
       imageTitle: <div className="my-image-title" />,
     });
 
     expect(
-      wrapper.find('.ril-toolbar-left .ril-toolbar-item-child .my-image-title')
+      wrapper.find(".ril-toolbar-left .ril-toolbar-item-child .my-image-title")
         .length
     ).toEqual(1);
   });
 });
 
-describe('Events', () => {
-  const LOAD_FAILURE_SRC = 'LOAD_FAILURE_SRC';
-  const LOAD_SUCCESS_SRC = 'LOAD_SUCCESS_SRC';
+describe("Events", () => {
+  const LOAD_FAILURE_SRC = "LOAD_FAILURE_SRC";
+  const LOAD_SUCCESS_SRC = "LOAD_SUCCESS_SRC";
   let originalImageSrcProto;
   beforeAll(() => {
     originalImageSrcProto = Object.getOwnPropertyDescriptor(
       global.Image.prototype,
-      'src'
+      "src"
     );
 
-    Object.defineProperty(global.Image.prototype, 'src', {
+    Object.defineProperty(global.Image.prototype, "src", {
       set(src) {
         if (src === LOAD_FAILURE_SRC) {
-          setTimeout(() => this.onerror(new Error('mock error')));
+          setTimeout(() => this.onerror(new Error("mock error")));
         } else if (src === LOAD_SUCCESS_SRC) {
           setTimeout(this.onload);
         }
@@ -115,7 +113,7 @@ describe('Events', () => {
   });
 
   afterAll(() => {
-    Object.defineProperty(global.Image.prototype, 'src', originalImageSrcProto);
+    Object.defineProperty(global.Image.prototype, "src", originalImageSrcProto);
   });
 
   const mockFns = {
@@ -131,58 +129,58 @@ describe('Events', () => {
   );
 
   // Spy zoomBtn focus
-  const { zoomOutBtn, zoomInBtn } = wrapper.instance();
-  jest.spyOn(zoomOutBtn.current, 'focus');
-  jest.spyOn(zoomInBtn.current, 'focus');
+  const {zoomOutBtn, zoomInBtn} = wrapper.instance();
+  jest.spyOn(zoomOutBtn.current, "focus");
+  jest.spyOn(zoomInBtn.current, "focus");
 
-  it('Calls onMovePrevRequest when left button clicked', () => {
+  it("Calls onMovePrevRequest when left button clicked", () => {
     expect(mockFns.onMovePrevRequest).toHaveBeenCalledTimes(0);
-    wrapper.find('.ril-prev-button').simulate('click');
+    wrapper.find(".ril-prev-button").simulate("click");
     expect(mockFns.onMovePrevRequest).toHaveBeenCalledTimes(1);
-    expect(mockFns.onMovePrevRequest).not.toHaveBeenCalledWith();
+    expect(mockFns.onMovePrevRequest).toHaveBeenCalledWith();
   });
 
-  it('Calls onMoveNextRequest when right button clicked', () => {
+  it("Calls onMoveNextRequest when right button clicked", () => {
     expect(mockFns.onMoveNextRequest).toHaveBeenCalledTimes(0);
-    wrapper.find('.ril-next-button').simulate('click');
+    wrapper.find(".ril-next-button").simulate("click");
     expect(mockFns.onMoveNextRequest).toHaveBeenCalledTimes(1);
-    expect(mockFns.onMoveNextRequest).not.toHaveBeenCalledWith();
+    expect(mockFns.onMoveNextRequest).toHaveBeenCalledWith();
   });
 
-  it('Calls onCloseRequest when close button clicked', () => {
+  it("Calls onCloseRequest when close button clicked", () => {
     expect(mockFns.onCloseRequest).toHaveBeenCalledTimes(0);
-    wrapper.find('button.ril-close').simulate('click');
+    wrapper.find("button.ril-close").simulate("click");
     expect(mockFns.onCloseRequest).toHaveBeenCalledTimes(1);
-    expect(mockFns.onCloseRequest).not.toHaveBeenCalledWith();
+    expect(mockFns.onCloseRequest).toHaveBeenCalledWith();
   });
 
-  it('Calls onImageLoad when image loaded', done => {
+  it("Calls onImageLoad when image loaded", done => {
     mockFns.onImageLoad.mockImplementationOnce((imageSrc, srcType, image) => {
       expect(imageSrc).toEqual(LOAD_SUCCESS_SRC);
-      expect(srcType).toEqual('mainSrc');
+      expect(srcType).toEqual("mainSrc");
       expect(image).toBeInstanceOf(global.Image);
       done();
     });
 
     expect(mockFns.onImageLoad).toHaveBeenCalledTimes(0);
-    wrapper.setProps({ mainSrc: LOAD_SUCCESS_SRC });
+    wrapper.setProps({mainSrc: LOAD_SUCCESS_SRC});
   });
 
-  it('Calls onImageLoadError when image loaded', done => {
+  it("Calls onImageLoadError when image loaded", done => {
     mockFns.onImageLoadError.mockImplementationOnce(
       (imageSrc, srcType, image) => {
         expect(imageSrc).toEqual(LOAD_FAILURE_SRC);
-        expect(srcType).toEqual('mainSrc');
+        expect(srcType).toEqual("mainSrc");
         expect(image).toBeInstanceOf(Error);
         done();
       }
     );
 
     expect(mockFns.onImageLoadError).toHaveBeenCalledTimes(0);
-    wrapper.setProps({ mainSrc: LOAD_FAILURE_SRC });
+    wrapper.setProps({mainSrc: LOAD_FAILURE_SRC});
   });
 
-  it('Calls the the ZoomIn Focus when ZoomOut is disabled', () => {
+  it("Calls the the ZoomIn Focus when ZoomOut is disabled", () => {
     wrapper.setState({
       zoomLevel: MIN_ZOOM_LEVEL + ZOOM_BUTTON_INCREMENT_SIZE,
     });
@@ -190,7 +188,7 @@ describe('Events', () => {
     expect(zoomInBtn.current.focus).toHaveBeenCalledTimes(1);
   });
 
-  it('Calls the the ZoomOut Focus when ZoomIn is disabled', () => {
+  it("Calls the the ZoomOut Focus when ZoomIn is disabled", () => {
     wrapper.setState({
       zoomLevel: MAX_ZOOM_LEVEL - ZOOM_BUTTON_INCREMENT_SIZE,
     });
@@ -199,7 +197,7 @@ describe('Events', () => {
   });
 });
 
-describe('Key bindings', () => {
+describe("Key bindings", () => {
   const mockCloseRequest = jest.fn();
   const mockMovePrevRequest = jest.fn();
   const mockMoveNextRequest = jest.fn();
@@ -213,96 +211,96 @@ describe('Key bindings', () => {
     />
   );
 
-  const simulateKey = keyCode => {
+  const simulateKey = key => {
     // Avoid interference by key throttling
-    wrapper.instance().lastKeyDownTime = new Date('1970-01-01').getTime();
-    wrapper.setProps({ animationOnKeyInput: false });
+    wrapper.instance().lastKeyDownTime = new Date("1970-01-01").getTime();
+    wrapper.setProps({animationOnKeyInput: false});
 
-    wrapper.find('.ril-outer').simulate('keyDown', { keyCode });
+    wrapper.find(".ril-outer").simulate("keyDown", {key});
   };
 
-  it('Responds to close key binding', () => {
+  it("Responds to close key binding", () => {
     expect(mockCloseRequest).toHaveBeenCalledTimes(0);
     // Simulate ESC key press
-    simulateKey(27);
+    simulateKey("Escape");
     expect(mockCloseRequest).toHaveBeenCalledTimes(1);
   });
 
   it('Doesn\'t respond to "move to next" key binding when no next image available', () => {
     // Simulate right arrow key press
-    simulateKey(39);
+    simulateKey("ArrowRight");
     expect(mockMoveNextRequest).toHaveBeenCalledTimes(0);
   });
 
   it('Responds to "move to next" key binding when next image available', () => {
-    wrapper.setProps({ nextSrc: '/my/next/src' });
+    wrapper.setProps({nextSrc: "/my/next/src"});
 
     // Simulate right arrow key press
-    simulateKey(39);
+    simulateKey("ArrowRight");
     expect(mockMoveNextRequest).toHaveBeenCalledTimes(1);
   });
 
   it('Doesn\'t respond to "move to prev" key binding when no prev image available', () => {
     // Simulate left arrow key press
-    simulateKey(37);
+    simulateKey("ArrowLeft");
     expect(mockMovePrevRequest).toHaveBeenCalledTimes(0);
   });
 
   it('Responds to "move to prev" key binding', () => {
-    wrapper.setProps({ prevSrc: '/my/prev/src' });
+    wrapper.setProps({prevSrc: "/my/prev/src"});
 
     // Simulate left arrow key press
-    simulateKey(37);
+    simulateKey("ArrowLeft");
     expect(mockMovePrevRequest).toHaveBeenCalledTimes(1);
   });
 });
 
-describe('Snapshot Testing', () => {
+describe("Snapshot Testing", () => {
   it('Lightbox renders properly"', () => {
     const wrapper = mount(<Lightbox {...commonProps} />);
     expect(wrapper).toMatchSnapshot();
   });
 });
 
-describe('Error Testing', () => {
-  it('Should render the default error message', () => {
+describe("Error Testing", () => {
+  it("Should render the default error message", () => {
     const wrapper = mount(<Lightbox {...commonProps} />);
     wrapper.setState({
-      loadErrorStatus: { mainSrc: true },
+      loadErrorStatus: {mainSrc: true},
     });
     wrapper.update();
-    expect(wrapper.find('div.ril-error-container')).toHaveText(
-      'This image failed to load'
+    expect(wrapper.find("div.ril-error-container")).toHaveText(
+      "This image failed to load"
     );
   });
-  it('Should render the specified error message', () => {
+  it("Should render the specified error message", () => {
     const wrapper = mount(<Lightbox {...commonProps} />);
     const imageLoadErrorMessage = <p>Specified Error Message</p>;
     wrapper.setState({
-      loadErrorStatus: { mainSrc: true },
+      loadErrorStatus: {mainSrc: true},
     });
     wrapper.setProps({
       imageLoadErrorMessage,
     });
     wrapper.update();
-    expect(wrapper.find('div.ril-error-container')).toContainReact(
+    expect(wrapper.find("div.ril-error-container")).toContainReact(
       imageLoadErrorMessage
     );
   });
 });
 
-describe('Utils', () => {
-  it('getHighestSafeWindowContext function if parent is the same origin', () => {
+describe("Utils", () => {
+  it("getHighestSafeWindowContext function if parent is the same origin", () => {
     const self = {
-      location: { href: 'http://test.test' },
-      document: { referrer: 'http://test.test' },
+      location: {href: "http://test.test"},
+      document: {referrer: "http://test.test"},
     };
     expect(getHighestSafeWindowContext(self)).toBe(global.window.top);
   });
-  it.skip('getHighestSafeWindowContext function if parent is a different origin', () => {
+  it.skip("getHighestSafeWindowContext function if parent is a different origin", () => {
     const self = {
-      location: { href: 'http://test1.test' },
-      document: { referrer: 'http://test.test' },
+      location: {href: "http://test1.test"},
+      document: {referrer: "http://test.test"},
     };
     expect(getHighestSafeWindowContext(self)).toBe(self);
   });

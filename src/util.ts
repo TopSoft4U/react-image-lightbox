@@ -1,16 +1,11 @@
-export function getWindowWidth() {
-  return typeof global.window !== 'undefined' ? global.window.innerWidth : 0;
-}
+import {SyntheticEvent} from "react";
 
-export function getWindowHeight() {
-  return typeof global.window !== 'undefined' ? global.window.innerHeight : 0;
-}
+export const getWindowWidth = () => typeof global.window !== "undefined" ? global.window.innerWidth : 0;
+export const getWindowHeight = () => typeof global.window !== "undefined" ? global.window.innerHeight : 0;
 
 const isCrossOriginFrame = () => {
   try {
-    return (
-      global.window.location.hostname !== global.window.parent.location.hostname
-    );
+    return global.window.location.hostname !== global.window.parent.location.hostname;
   } catch (e) {
     return true;
   }
@@ -18,7 +13,7 @@ const isCrossOriginFrame = () => {
 
 // Get the highest window context that isn't cross-origin
 // (When in an iframe)
-export function getHighestSafeWindowContext(self = global.window.self) {
+export const getHighestSafeWindowContext = (self: Window = global.window.self): Window => {
   // If we reached the top level, return self
   if (self === global.window.top) {
     return self;
@@ -33,4 +28,8 @@ export function getHighestSafeWindowContext(self = global.window.self) {
   // If a different origin, we consider the current level
   // as the top reachable one
   return self;
-}
+};
+
+export const stopEvent = (e: SyntheticEvent) => {
+  e.preventDefault();
+};

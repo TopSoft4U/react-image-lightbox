@@ -4,10 +4,22 @@
       "@babel/preset-env",
       {
         "targets": {
-          "browsers": ["last 2 versions", "ie >= 9"]
+          "browsers": [
+            "last 2 versions",
+            ">0.25%",
+            "not dead",
+            "not op_mini all",
+            "not ie 11"
+          ]
         }
       }
     ],
-    "@babel/preset-react"
+    "@babel/preset-typescript",
+    [
+      "@babel/preset-react",
+      {
+        "runtime": "automatic"
+      }
+    ]
   ]
 }
