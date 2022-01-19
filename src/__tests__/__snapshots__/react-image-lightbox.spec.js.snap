@@ -189,7 +189,7 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
         >
           <div
             className="ril-image-wrapper ril-not-loaded"
-            key="/fake/image/src1.jpg-0"
+            key="/fake/image/src1.jpg-0-0"
             onDoubleClick={[Function]}
             onDragStart={[Function]}
             onWheel={[Function]}
@@ -233,7 +233,7 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
           </div>
           <div
             className="ril-image-wrapper ril-not-loaded"
-            key="/fake/image/src.jpg-0"
+            key="/fake/image/src.jpg-0-1"
             onDragStart={[Function]}
             style={
               Object {
@@ -273,7 +273,7 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
           </div>
           <div
             className="ril-image-wrapper ril-not-loaded"
-            key="/fake/image/src2.jpg-0"
+            key="/fake/image/src2.jpg-0-2"
             onDragStart={[Function]}
             style={
               Object {
