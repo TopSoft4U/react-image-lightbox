@@ -11,7 +11,7 @@
     "deps:update": "npx npm-check-updates --dep prod,dev,optional -u",
     "start": "parcel examples/cats/index.html",
     "lint": "eslint .",
-    "prepublishOnly": "yarn run lint && yarn run test && yarn run build",
+    "prepublishOnly": "yarn run lint && yarn run test && yarn run clean && yarn run build",
     "test": "jest",
     "test:watch": "jest --watchAll",
     "deploy": "yarn run build:demo && gh-pages -d build",
