@@ -1,7 +1,6 @@
 import {
   Component,
   createRef,
-  CSSProperties,
   EventHandler,
   KeyboardEventHandler,
   MouseEvent,
@@ -15,7 +14,8 @@ import {
   WheelEventHandler
 } from "react";
 import classNames from "classnames";
-import {getHighestSafeWindowContext, getWindowHeight, getWindowWidth, loadableIndexes, stopEvent} from "./util";
+import {getHighestSafeWindowContext, getWindowHeight, getWindowWidth, loadableIndexes, stopEvent,arraySame} from "./util";
+
 import {
   ACTION_MOVE,
   ACTION_NONE,
@@ -46,8 +46,10 @@ import {
   ReactImageLightboxGenerateLoadDoneCallback,
   ReactImageLightboxGenerateLoadError,
   ReactImageLightboxProps,
-  ReactImageLightboxState
-  ,RILBestImageForType,RILScrollerImage} from "./types";
+  ReactImageLightboxState,
+  RILBestImageForType,
+  RILScrollerImage
+} from "./types";
 import Scroller from "./Components/Scroller";
 
 class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLightboxState> {
@@ -73,7 +75,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
     infiniteScrolling: true,
   };
 
-  state = {
+  state: Readonly<ReactImageLightboxState> = {
     // -----------------------------
     // Animation
     // -----------------------------
@@ -102,6 +104,8 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
 
     // image load error for srcType
     loadErrorStatus: {},
+
+    loadableIndexes: [],
   }
 
   private outerEl: RefObject<HTMLDivElement> = createRef();
@@ -159,10 +163,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
 
   private didUnmount = false;
 
-  private loadableIndexes: number[] = [];
-
   static isTargetMatchImage = (target: EventTarget) => {
-    console.log(target);
     if (!target)
       return false;
 
@@ -222,7 +223,6 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
       this.windowContext?.addEventListener(type, this.listeners[type]);
     });
 
-    this.updateLoadableIndexes();
     this.loadAllImages();
   }
 
@@ -232,14 +232,12 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
   }
 
   componentDidUpdate(prevProps: ReactImageLightboxProps) {
-    this.updateLoadableIndexes();
-
     let sourcesChanged = prevProps.images.length !== this.props.images.length;
     if (!sourcesChanged) {
       const prevSrcs = prevProps.images.map(x => x.full);
       const nextSrcs = this.props.images.map(x => x.full);
 
-      sourcesChanged = !prevSrcs.every((val, idx) => val === nextSrcs[idx]);
+      sourcesChanged = !arraySame(prevSrcs, nextSrcs);
     }
 
     if (sourcesChanged || this.moveRequested) {
@@ -269,7 +267,17 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
 
   updateLoadableIndexes = () => {
     const {images, activeIndex, loadAhead, infiniteScrolling} = this.props;
-    this.loadableIndexes = loadableIndexes(images.length, activeIndex, loadAhead, infiniteScrolling);
+    const {loadableIndexes: oldIndexes} = this.state;
+    const newIndexes = loadableIndexes(images.length, activeIndex, loadAhead, infiniteScrolling);
+
+    if (!arraySame(oldIndexes, newIndexes)) {
+      this.setState(prev => ({
+        ...prev,
+        loadableIndexes: newIndexes
+      }));
+    }
+
+    return newIndexes;
   }
 
   // Get info for the best suited image to display with the given srcType
@@ -1128,6 +1136,8 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
       this.forceUpdate();
     };
 
+    const indexes = this.updateLoadableIndexes();
+
     // Load the images
     IMAGE_KEYS.forEach(type => {
       this.props.images.forEach((image, index) => {
@@ -1135,7 +1145,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
         const src = image.full;
 
         // Only visible ones
-        if (!this.loadableIndexes.includes(index))
+        if (!indexes.includes(index))
           return;
 
         const loadErrorStatus = this.state.loadErrorStatus as LightboxLoadErrorStatus;
@@ -1189,6 +1199,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
       offsetX: 0,
       offsetY: 0,
       loadErrorStatus: {},
+      loadableIndexes: [],
     };
 
     this.keyPressed = false;
@@ -1236,17 +1247,11 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
       offsetY,
       isClosing,
       loadErrorStatus,
+      loadableIndexes: indexes,
     } = this.state;
 
-    const imageTransitionStyle: CSSProperties = {};
-
-    // Transition settings for sliding animations
-    if (!animationDisabled && this.isAnimatingSnap()) {
-      imageTransitionStyle.transition = `transform ${animationDuration}ms`;
-    }
-
     const scrollerImages: RILScrollerImage[] = images.map((img, index) => {
-      const shouldLoad = this.loadableIndexes.includes(index);
+      const shouldLoad = indexes.includes(index);
       const object = loadErrorStatus as LightboxLoadErrorStatus;
 
       const hasError = IMAGE_KEYS.some((key) => {

@@ -56,17 +56,22 @@ const Scroller = forwardRef<HTMLDivElement, ScrollerProps>((
         if (isCurrent) {
           style = {
             ...style,
+            // TODO cursor if zoom = MIN_LEVEL
             transition: isSnapAnimating ? `transform ${animationDuration}ms` : undefined,
             ...getTransform({x, y, zoom}),
           };
         }
 
         const isError = image.shouldLoad && !imageInfo && image.hasError;
-        const isLoading = image.shouldLoad && !imageInfo && !image.hasError;
-        const isReady = image.shouldLoad && imageInfo;
+        const isLoading = !isError && image.shouldLoad && !imageInfo && !image.hasError;
+        const isReady = !isLoading && image.shouldLoad && imageInfo;
+
+        if (isLoading && style.backgroundImage) {
+          delete style.backgroundImage;
+        }
 
         return <div
-          key={`${image.full}-${activeIndex}`}
+          key={`${image.full}-${activeIndex}-${i}`}
           ref={isCurrent ? ref : undefined}
           className={classNames(
             "ril-image-wrapper",

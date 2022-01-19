@@ -66,3 +66,7 @@ export const loadableIndexes = (
     .map(x => Math.abs(x) - 1)
     .filter((v, i, a) => a.indexOf(v) === i);
 };
+
+export const arraySame = <T>(arr1: T[], arr2: T[]) => {
+  return arr1.length === arr2.length && arr1.every((val, idx) => val === arr2[idx]);
+};

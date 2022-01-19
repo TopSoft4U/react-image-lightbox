@@ -20,8 +20,8 @@ import image4Thumb from "./images/4_thumb.jpg";
 // In your own app, you would need to use import styles once in the app
 // import 'react-image-lightbox/styles.css';
 
-const images = [image1, image2, image3, image4];
-const thumbs = [image1Thumb, image2Thumb, image3Thumb, image4Thumb];
+const images = [image1, image2, image3, image4, image1, image2, image3, image4, image1, image2, image3, image4];
+const thumbs = [image1Thumb, image2Thumb, image3Thumb, image4Thumb, image1Thumb, image2Thumb, image3Thumb, image4Thumb, image1Thumb, image2Thumb, image3Thumb, image4Thumb];
 
 const titles = [
   "",
@@ -72,7 +72,11 @@ const titles = [
   </span>,
 ];
 
-const onImageLoadError: ReactImageLightboxProps["onImageLoadError"] = (imageSrc, _srcType, errorEvent) => {
+const onImageLoad: ReactImageLightboxProps["onImageLoad"] = (imageSrc, _srcType, index) => {
+  console.log(`Loaded image ${imageSrc} - index: ${index}`); // eslint-disable-line no-console
+};
+
+const onImageLoadError: ReactImageLightboxProps["onImageLoadError"] = (imageSrc, type, index, errorEvent) => {
   console.error(`Could not load image at ${imageSrc}`, errorEvent); // eslint-disable-line no-console
 };
 
@@ -85,6 +89,10 @@ const App = () => {
 
   const moveNext = useCallback(() => setIndex(prev => (prev + 1) % images.length), []);
   const movePrev = useCallback(() => setIndex(prev => (prev + images.length - 1) % images.length), []);
+
+  const onClick = useCallback(() => {
+    setIndex(8);
+  }, []);
 
   const lightbox = <Modal fullscreen show={isOpen} onHide={closeLightbox}>
     <Modal.Body>
@@ -101,7 +109,11 @@ const App = () => {
         onImageLoadError={onImageLoadError}
         infiniteScrolling={true}
         discourageDownloads={true}
-        footer={<div style={{height: "50px"}} />}
+        onImageLoad={onImageLoad}
+        loadAhead={1}
+        footer={<div style={{height: "50px"}}>
+          <button onClick={onClick}>test</button>
+        </div>}
       />
     </Modal.Body>
   </Modal>;

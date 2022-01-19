@@ -150,6 +150,7 @@ export type ReactImageLightboxState = {
   offsetX: number;
   offsetY: number;
 
+  loadableIndexes: number[];
   loadErrorStatus: LightboxLoadErrorStatus;
 }
 

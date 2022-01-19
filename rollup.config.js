@@ -4,7 +4,6 @@ import {babel} from "@rollup/plugin-babel";
 import postcss from "rollup-plugin-postcss";
 import typescript from "@rollup/plugin-typescript";
 import analyze from "rollup-plugin-analyzer";
-import uglify from "@lopatnov/rollup-plugin-uglify";
 
 import pkg from "./package.json";
 
@@ -42,7 +41,6 @@ export default {
       exclude: "node_modules/**",
       babelHelpers: "runtime"
     }),
-    uglify(),
     analyze(),
   ],
 };
