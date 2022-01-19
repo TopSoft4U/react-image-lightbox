@@ -1,12 +1,3 @@
-@keyframes closeWindow {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
 .ril-outer {
   width: 100%;
   height: 100%;
@@ -27,10 +18,6 @@
 .ril-bottom-bar {
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 2;
-}
-
-.ril-outer-closing {
-  opacity: 0;
 }
 
 .ril-test {
@@ -180,10 +167,6 @@
 .ril-zoom-out {
   background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PGcgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJtMSAxOSA2LTZNOSA4aDYiLz48L2c+PGNpcmNsZSBjeD0iMTIiIGN5PSI4IiByPSI3IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIi8+PC9zdmc+')
     no-repeat center;
-}
-
-.ril-outer-animating {
-  animation-name: closeWindow;
 }
 
 @keyframes pointFade {

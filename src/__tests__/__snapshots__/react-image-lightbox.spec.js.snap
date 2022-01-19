@@ -37,7 +37,7 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
   zoomOutLabel="Zoom out"
 >
   <div
-    className="ril-outer ril-outer-animating"
+    className="ril-outer"
     onKeyDown={[Function]}
     onKeyUp={[Function]}
     onMouseDown={[Function]}
@@ -45,13 +45,6 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
     onTouchMove={[Function]}
     onTouchStart={[Function]}
     onWheel={[Function]}
-    style={
-      Object {
-        "animationDirection": "reverse",
-        "animationDuration": "300ms",
-        "transition": "opacity 300ms",
-      }
-    }
     tabIndex={-1}
   >
     <div

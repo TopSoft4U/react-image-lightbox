@@ -80,10 +80,6 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
     // Animation
     // -----------------------------
 
-    // Lightbox is closing
-    // When Lightbox is mounted, if animation is enabled it will open with the reverse of the closing animation
-    isClosing: !this.props.animationDisabled,
-
     // Component parts should animate (e.g., when images are moving, or image is being zoomed)
     shouldAnimateSnap: false,
 
@@ -1069,7 +1065,15 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
   }
 
   // Detach key and mouse input events
-  isAnimatingSnap = () => this.state.shouldAnimateSnap || this.state.isClosing;
+  isAnimatingSnap = () => {
+    const {animationDuration, animationDisabled} = this.props;
+    const {shouldAnimateSnap} = this.state;
+
+    if (!animationDuration || animationDisabled)
+      return false;
+
+    return shouldAnimateSnap;
+  };
 
   // Check if image is loaded
   isImageLoaded = (imageSrc: string | undefined) => imageSrc && imageSrc in this.imageCache && this.imageCache[imageSrc].loaded;
@@ -1175,21 +1179,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
 
   // Request that the lightbox be closed
   requestClose = () => {
-    // Call the parent close request
-    const closeLightbox = () => this.props.onCloseRequest();
-
-    if (this.props.animationDisabled) {
-      // No animation
-      closeLightbox();
-      return;
-    }
-
-    // With animation
-    // Start closing animation
-    this.setState({isClosing: true});
-
-    // Perform the actual closing at the end of the animation
-    this.setTimeout(closeLightbox, this.props.animationDuration);
+    this.props.onCloseRequest?.();
   }
 
   requestMovePage = (direction: "prev" | "next") => {
@@ -1245,7 +1235,6 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
       zoomLevel,
       offsetX,
       offsetY,
-      isClosing,
       loadErrorStatus,
       loadableIndexes: indexes,
     } = this.state;
@@ -1275,17 +1264,8 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
       <div // eslint-disable-line jsx-a11y/no-static-element-interactions
         className={classNames(
           "ril-outer",
-          "ril-outer-animating",
-          {
-            "ril-outer-closing": isClosing,
-          },
           this.props.outerClassName
         )}
-        style={{
-          transition: `opacity ${animationDuration}ms`,
-          animationDuration: `${animationDuration}ms`,
-          animationDirection: isClosing ? "normal" : "reverse",
-        }}
         ref={this.outerEl}
         onWheel={this.handleOuterMousewheel}
         onMouseMove={this.handleMouseMove}

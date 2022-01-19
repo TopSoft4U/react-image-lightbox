@@ -261,15 +261,10 @@ describe("Key bindings", () => {
   };
 
   it("Responds to close key binding", () => {
-    jest.useFakeTimers();
     expect(mockCloseRequest).not.toBeCalled();
 
     // Simulate ESC key press
     simulateKey(KEYS.ESC);
-    expect(mockCloseRequest).not.toBeCalled();
-
-    // Fast-forward until all timers have been executed
-    jest.runAllTimers();
 
     expect(mockCloseRequest).toBeCalled();
   });
