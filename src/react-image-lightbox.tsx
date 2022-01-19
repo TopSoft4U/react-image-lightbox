@@ -376,6 +376,9 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
   getPrevSrc = () => {
     const {images, infiniteScrolling, activeIndex} = this.props;
 
+    if (!images.length)
+      return;
+
     let index = activeIndex - 1;
     if (!infiniteScrolling && index < 0)
       return;
@@ -387,6 +390,9 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
 
   getNextSrc = () => {
     const {images, infiniteScrolling, activeIndex} = this.props;
+
+    if (!images.length)
+      return;
 
     let index = activeIndex + 1;
     if (!infiniteScrolling && index >= images.length)
