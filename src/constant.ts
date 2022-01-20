@@ -1,5 +1,5 @@
 // Min image zoom level
-import {LightboxSrcTypeKey} from "src/types";
+import {LightboxSrcTypeKey} from "./types";
 
 export const MIN_ZOOM_LEVEL = 0;
 

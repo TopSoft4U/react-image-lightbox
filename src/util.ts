@@ -30,8 +30,8 @@ export const getHighestSafeWindowContext = (self: Window = global.window.self): 
   return self;
 };
 
-export const stopEvent = (e: SyntheticEvent) => {
-  e.preventDefault();
+export const stopEvent = (e?: SyntheticEvent) => {
+  e?.preventDefault();
 };
 
 export const loadableIndexes = (

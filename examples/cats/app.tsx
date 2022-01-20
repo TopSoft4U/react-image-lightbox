@@ -1,13 +1,13 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import {useState, useCallback} from "react";
 import {Modal} from "react-bootstrap";
-import {ReactImageLightboxProps} from "src/types";
-import {RILNavButtonProps} from "src/Components/RILNavButton";
+import {RILNavButtonProps} from "../../src/Components/RILNavButton";
 import Lightbox from "../../src";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./stylesheets/vendor/stylesheet.css";
 import "./stylesheets/app.css";
 
+import {ReactImageLightboxProps} from "../../src/types";
 import image1 from "./images/1.jpg";
 import image2 from "./images/2.jpg";
 import image3 from "./images/3.jpg";
@@ -116,6 +116,7 @@ const App = () => {
         onImageLoadError={onImageLoadError}
         infiniteScrolling={false}
         discourageDownloads={true}
+        singleClickZoom={true}
         onImageLoad={onImageLoad}
         prevButtonRenderer={CustomPrevButton}
         loadAhead={1}

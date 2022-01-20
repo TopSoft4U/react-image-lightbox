@@ -439,6 +439,19 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
     clearTimeout(id);
   };
 
+  toggleZoom = (x: number, y: number) => {
+    if (this.state.zoomLevel > MIN_ZOOM_LEVEL) {
+      // A double click when zoomed in zooms all the way out
+      this.changeZoom(MIN_ZOOM_LEVEL, x, y);
+    } else {
+      // A double click when zoomed all the way out zooms in
+      this.changeZoom(
+        this.state.zoomLevel + ZOOM_BUTTON_INCREMENT_SIZE,
+        x, y
+      );
+    }
+  }
+
   // Change zoom level
   changeZoom = (zoomLevel: number, clientX?: number, clientY?: number) => {
     // Ignore if zoom disabled
@@ -667,17 +680,10 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
    * Handle a double click on the current image
    */
   handleImageDoubleClick: MouseEventHandler<HTMLDivElement> = (event) => {
-    if (this.state.zoomLevel > MIN_ZOOM_LEVEL) {
-      // A double click when zoomed in zooms all the way out
-      this.changeZoom(MIN_ZOOM_LEVEL, event.clientX, event.clientY);
-    } else {
-      // A double click when zoomed all the way out zooms in
-      this.changeZoom(
-        this.state.zoomLevel + ZOOM_BUTTON_INCREMENT_SIZE,
-        event.clientX,
-        event.clientY
-      );
-    }
+    if (this.props.singleClickZoom)
+      return;
+
+    this.toggleZoom(event.clientX, event.clientY);
   }
 
   shouldHandleEvent = (source: number) => {
@@ -874,6 +880,15 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
   };
 
   handleEnd = (event?: SyntheticEvent) => {
+    if (this.props.singleClickZoom && this.currentAction > ACTION_NONE) {
+      const wasMoved = this.state.offsetX !== this.moveStartOffsetX ||
+        this.state.offsetY !== this.moveStartOffsetY;
+
+      const pointerEvent = event as PointerEvent;
+      if (!wasMoved)
+        this.toggleZoom(pointerEvent.clientX, pointerEvent.clientY);
+    }
+
     switch (this.currentAction) {
       case ACTION_MOVE:
         this.handleMoveEnd();
@@ -939,6 +954,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
       maxOffsets.minY,
       Math.min(maxOffsets.maxY, this.state.offsetY)
     );
+
     if (
       nextOffsetX !== this.state.offsetX ||
       nextOffsetY !== this.state.offsetY
@@ -1231,6 +1247,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
       images,
       activeIndex,
       loadAhead,
+      singleClickZoom,
       // Renderers
       prevButtonRenderer,
       nextButtonRenderer,
@@ -1350,6 +1367,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
           animationDuration={animationDuration}
           animationDisabled={animationDisabled}
           discourageDownloads={discourageDownloads}
+          singleClickZoom={singleClickZoom}
         />
 
         {footer && <div className={classNames("ril-bottom-bar", this.props.footerClassName)}>

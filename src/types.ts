@@ -101,8 +101,10 @@ export type ReactImageLightboxProps = {
   activeIndex: number;
   loadAhead: number;
   infiniteScrolling: boolean;
+  singleClickZoom?: boolean;
 
   // Renderers
+  headerRenderer?: () => JSX.Element;
   prevButtonRenderer?: (props: RILNavButtonProps) => JSX.Element;
   nextButtonRenderer?: (props: RILNavButtonProps) => JSX.Element;
 

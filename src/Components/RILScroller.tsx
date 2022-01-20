@@ -7,7 +7,7 @@ import RILLoader from "./RILLoader";
 
 // import Loader from "./Components/Loader";
 
-type ScrollerProps = Pick<ReactImageLightboxProps, "activeIndex" | "loadAhead" | "animationDisabled" | "animationDuration" | "loader" | "discourageDownloads"> &
+type ScrollerProps = Pick<ReactImageLightboxProps, "activeIndex" | "loadAhead" | "animationDisabled" | "animationDuration" | "loader" | "discourageDownloads" | "singleClickZoom"> &
   Pick<ReactImageLightboxState, "zoomLevel"> &
   LightboxTransform & {
   images: RILScrollerImage[];
@@ -31,6 +31,7 @@ const RILScroller = forwardRef<HTMLDivElement, ScrollerProps>((
     onImageDoubleClick, onImageWheel,
     getBestImageForType,
     discourageDownloads,
+    singleClickZoom,
     loader,
     x, y, zoom, zoomLevel,
   },
@@ -56,9 +57,15 @@ const RILScroller = forwardRef<HTMLDivElement, ScrollerProps>((
         }
 
         if (isCurrent) {
+          let cursor: CSSProperties["cursor"] | undefined = undefined;
+          if (zoomLevel > MIN_ZOOM_LEVEL)
+            cursor = "move";
+          else if (singleClickZoom)
+            cursor = "zoom-in";
+
           style = {
             ...style,
-            cursor: zoomLevel > MIN_ZOOM_LEVEL ? "move" : undefined,
+            cursor,
             transition: isSnapAnimating ? `transform ${animationDuration}ms` : undefined,
             ...getTransform({x, y, zoom}),
           };
