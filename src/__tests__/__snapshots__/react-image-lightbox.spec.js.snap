@@ -70,8 +70,8 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
           className="ril-zoom-in"
           disabled={false}
           key="zoom-in"
-          label="Zoom in"
           onClick={[Function]}
+          title="Zoom in"
         >
           <li
             className="ril-toolbar-item"
@@ -91,8 +91,8 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
           className="ril-zoom-out"
           disabled={true}
           key="zoom-out"
-          label="Zoom out"
           onClick={[Function]}
+          title="Zoom out"
         >
           <li
             className="ril-toolbar-item"
@@ -111,8 +111,8 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
           className="ril-close"
           disabled={false}
           key="close"
-          label="Close lightbox"
           onClick={[Function]}
+          title="Close lightbox"
         >
           <li
             className="ril-toolbar-item"
@@ -167,6 +167,7 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
       x={-0}
       y={-0}
       zoom={1}
+      zoomLevel={0}
     >
       <div
         className="ril-inner"
@@ -189,6 +190,7 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
             style={
               Object {
                 "backgroundImage": undefined,
+                "cursor": undefined,
                 "transform": "translate3d(0px,0px,0) scale3d(1,1,1)",
                 "transition": undefined,
               }
@@ -197,7 +199,7 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
             <div
               className="ril-loading-container"
             >
-              <Loader>
+              <RILLoader>
                 <div
                   className="ril-loader"
                 >
@@ -221,7 +223,7 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
                     />
                   </svg>
                 </div>
-              </Loader>
+              </RILLoader>
             </div>
           </div>
           <div
@@ -237,7 +239,7 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
             <div
               className="ril-loading-container"
             >
-              <Loader>
+              <RILLoader>
                 <div
                   className="ril-loader"
                 >
@@ -261,7 +263,7 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
                     />
                   </svg>
                 </div>
-              </Loader>
+              </RILLoader>
             </div>
           </div>
           <div
@@ -277,7 +279,7 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
             <div
               className="ril-loading-container"
             >
-              <Loader>
+              <RILLoader>
                 <div
                   className="ril-loader"
                 >
@@ -301,28 +303,44 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
                     />
                   </svg>
                 </div>
-              </Loader>
+              </RILLoader>
             </div>
           </div>
         </div>
       </div>
     </ForwardRef>
-    <button
-      aria-label="Previous image"
-      className="ril-nav-buttons ril-prev-button"
+    <ForwardRef
+      className="ril-prev-button"
+      disabled={false}
       key="prev"
       onClick={[Function]}
       title="Previous image"
-      type="button"
-    />
-    <button
-      aria-label="Next image"
-      className="ril-nav-buttons ril-next-button"
+    >
+      <button
+        aria-label="Previous image"
+        className="ril-nav-buttons ril-prev-button"
+        disabled={false}
+        onClick={[Function]}
+        title="Previous image"
+        type="button"
+      />
+    </ForwardRef>
+    <ForwardRef
+      className="ril-next-button"
+      disabled={false}
       key="next"
       onClick={[Function]}
       title="Next image"
-      type="button"
-    />
+    >
+      <button
+        aria-label="Next image"
+        className="ril-nav-buttons ril-next-button"
+        disabled={false}
+        onClick={[Function]}
+        title="Next image"
+        type="button"
+      />
+    </ForwardRef>
   </div>
 </ReactImageLightbox>
 `;

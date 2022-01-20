@@ -43,53 +43,53 @@ describe("Lightbox structure", () => {
 
   it("does not contain prev button when infiniteScrolling is disabled and image is first active", () => {
     wrapper.setProps({infiniteScrolling: false, activeIndex: 0});
-    expect(wrapper.find(".ril-prev-button").length).toEqual(0);
+    expect(wrapper.find(".ril-prev-button").hostNodes().length).toEqual(0);
   });
 
   it("contains prev button when when infiniteScrolling is disabled and image is NOT first active", () => {
     wrapper.setProps({infiniteScrolling: false, activeIndex: 1});
-    expect(wrapper.find(".ril-prev-button").length).toEqual(1);
+    expect(wrapper.find(".ril-prev-button").hostNodes().length).toEqual(1);
   });
 
   it("contains prev button when infiniteScrolling is enabled and image is first active", () => {
     wrapper.setProps({infiniteScrolling: true, activeIndex: 0});
-    expect(wrapper.find(".ril-prev-button").length).toEqual(1);
+    expect(wrapper.find(".ril-prev-button").hostNodes().length).toEqual(1);
   });
 
   it("contains prev button when infiniteScrolling is enabled and image is NOT first active", () => {
     wrapper.setProps({infiniteScrolling: true, activeIndex: 1});
-    expect(wrapper.find(".ril-prev-button").length).toEqual(1);
+    expect(wrapper.find(".ril-prev-button").hostNodes().length).toEqual(1);
   });
 
   it("does not contain next button when infiniteScrolling is disabled and image is last active", () => {
     wrapper.setProps({infiniteScrolling: false, activeIndex: commonProps.images.length - 1});
-    expect(wrapper.find(".ril-next-button").length).toEqual(0);
+    expect(wrapper.find(".ril-next-button").hostNodes().length).toEqual(0);
   });
 
   it("contains next button when when infiniteScrolling is disabled and image is NOT last active", () => {
     wrapper.setProps({infiniteScrolling: false, activeIndex: commonProps.images.length - 2});
-    expect(wrapper.find(".ril-next-button").length).toEqual(1);
+    expect(wrapper.find(".ril-next-button").hostNodes().length).toEqual(1);
   });
 
   it("contains next button when infiniteScrolling is enabled and image is last active", () => {
     wrapper.setProps({infiniteScrolling: true, activeIndex: commonProps.images.length - 1});
-    expect(wrapper.find(".ril-next-button").length).toEqual(1);
+    expect(wrapper.find(".ril-next-button").hostNodes().length).toEqual(1);
   });
 
   it("contains next button when infiniteScrolling is enabled and image is NOT first active", () => {
     wrapper.setProps({infiniteScrolling: true, activeIndex: commonProps.images.length - 2});
-    expect(wrapper.find(".ril-next-button").length).toEqual(1);
+    expect(wrapper.find(".ril-next-button").hostNodes().length).toEqual(1);
   });
 
   it("contains zoom buttons when enableZoom is true (default)", () => {
-    expect(wrapper.find("button.ril-zoom-out").length).toEqual(1);
-    expect(wrapper.find("button.ril-zoom-in").length).toEqual(1);
+    expect(wrapper.find(".ril-zoom-out").hostNodes().length).toEqual(1);
+    expect(wrapper.find(".ril-zoom-in").hostNodes().length).toEqual(1);
   });
 
   it("does not contain zoom buttons when enableZoom is false", () => {
     wrapper.setProps({enableZoom: false});
-    expect(wrapper.find("button.ril-zoom-out").length).toEqual(0);
-    expect(wrapper.find("button.ril-zoom-in").length).toEqual(0);
+    expect(wrapper.find(".ril-zoom-out").hostNodes().length).toEqual(0);
+    expect(wrapper.find(".ril-zoom-in").hostNodes().length).toEqual(0);
   });
 
   it("does not contain a bottom bar when no footer prop is empty", () => {
@@ -176,14 +176,14 @@ describe("Events", () => {
 
   it("Calls onMovePrevRequest when left button clicked", () => {
     expect(mockFns.onMovePrevRequest).toHaveBeenCalledTimes(0);
-    wrapper.find(".ril-prev-button").simulate("click");
+    wrapper.find(".ril-prev-button").hostNodes().simulate("click");
     expect(mockFns.onMovePrevRequest).toHaveBeenCalledTimes(1);
     expect(mockFns.onMovePrevRequest).toHaveBeenCalledWith();
   });
 
   it("Calls onMoveNextRequest when right button clicked", () => {
     expect(mockFns.onMoveNextRequest).toHaveBeenCalledTimes(0);
-    wrapper.find(".ril-next-button").simulate("click");
+    wrapper.find(".ril-next-button").hostNodes().simulate("click");
     expect(mockFns.onMoveNextRequest).toHaveBeenCalledTimes(1);
     expect(mockFns.onMoveNextRequest).toHaveBeenCalledWith();
   });
