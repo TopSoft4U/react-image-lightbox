@@ -1223,6 +1223,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
       toolbarButtons,
       loader,
       footer,
+      children,
       showToolbar,
       // Scroller props
       animationDisabled,
@@ -1370,6 +1371,8 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
           disabled={this.isAnimatingSnap()}
           onClick={this.requestMoveNext}
         />}
+
+        {children}
       </div>
     );
   }

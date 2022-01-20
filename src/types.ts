@@ -87,6 +87,7 @@ export type ReactImageLightboxProps = {
   loader?: ReactNode;
 
   // New props - custom
+  children?: ReactNode;
   footer?: ReactNode;
   showToolbar?: boolean;
 
