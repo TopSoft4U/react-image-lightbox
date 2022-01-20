@@ -1,6 +1,6 @@
 {
   "name": "@topsoft4u/react-image-lightbox",
-  "version": "6.2.8",
+  "version": "6.2.9",
   "description": "A lightbox component for React.js",
   "scripts": {
     "build": "rollup -c",
