@@ -34,3 +34,16 @@
 .demoButton:focus {
   box-shadow: 0 0 3px 2px #999;
 }
+
+.custom-prev-button {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  width: 75px;
+  height: 100px;
+  border: none;
+  color: #FFF;
+  background: rgba(0,0,0, .5);
+}

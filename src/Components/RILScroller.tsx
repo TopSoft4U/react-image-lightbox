@@ -1,12 +1,14 @@
 import classNames from "classnames";
 import {CSSProperties, forwardRef, MouseEventHandler, useMemo, WheelEventHandler} from "react";
-import {LightboxTransform, ReactImageLightboxProps, RILBestImageForType, RILScrollerImage} from "../types";
+import {LightboxTransform, ReactImageLightboxProps, ReactImageLightboxState, RILBestImageForType, RILScrollerImage} from "../types";
 import {stopEvent} from "../util";
-import Loader from "./Loader";
+import {MIN_ZOOM_LEVEL} from "../constant";
+import RILLoader from "./RILLoader";
 
 // import Loader from "./Components/Loader";
 
 type ScrollerProps = Pick<ReactImageLightboxProps, "activeIndex" | "loadAhead" | "animationDisabled" | "animationDuration" | "loader" | "discourageDownloads"> &
+  Pick<ReactImageLightboxState, "zoomLevel"> &
   LightboxTransform & {
   images: RILScrollerImage[];
   getBestImageForType: (index: number) => RILBestImageForType | undefined;
@@ -21,7 +23,7 @@ const getTransform = ({x = 0, y = 0, zoom = 1}: Partial<LightboxTransform>): CSS
   transform: `translate3d(${x}px,${y}px,0) scale3d(${zoom},${zoom},${zoom})`,
 });
 
-const Scroller = forwardRef<HTMLDivElement, ScrollerProps>((
+const RILScroller = forwardRef<HTMLDivElement, ScrollerProps>((
   {
     className, imageClassName,
     animationDisabled, animationDuration, isSnapAnimating,
@@ -30,7 +32,7 @@ const Scroller = forwardRef<HTMLDivElement, ScrollerProps>((
     getBestImageForType,
     discourageDownloads,
     loader,
-    x, y, zoom,
+    x, y, zoom, zoomLevel,
   },
   ref
 ) => {
@@ -56,7 +58,7 @@ const Scroller = forwardRef<HTMLDivElement, ScrollerProps>((
         if (isCurrent) {
           style = {
             ...style,
-            // TODO cursor if zoom = MIN_LEVEL
+            cursor: zoomLevel > MIN_ZOOM_LEVEL ? "move" : undefined,
             transition: isSnapAnimating ? `transform ${animationDuration}ms` : undefined,
             ...getTransform({x, y, zoom}),
           };
@@ -92,7 +94,7 @@ const Scroller = forwardRef<HTMLDivElement, ScrollerProps>((
             {image.errorMessage}
           </div>}
           {isLoading && <div className="ril-loading-container">
-            {loader !== undefined ? loader : <Loader />}
+            {loader !== undefined ? loader : <RILLoader />}
           </div>}
           {discourageDownloads && isReady && <div className="ril-download-blocker" />}
           {!discourageDownloads && isReady && <img
@@ -108,4 +110,4 @@ const Scroller = forwardRef<HTMLDivElement, ScrollerProps>((
   </div>;
 });
 
-export default Scroller;
+export default RILScroller;

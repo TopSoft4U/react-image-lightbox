@@ -1,43 +1,7 @@
 import {ImgHTMLAttributes, ReactNode} from "react";
+import {RILNavButtonProps} from "./Components/RILNavButton";
 
-export type LightboxXY = {
-  x: number,
-  y: number,
-};
-
-export type LightboxTransform = LightboxXY & {
-  zoom: number;
-}
-
-export type RILImageProps = {
-  full: string;
-  thumbnail?: string;
-  title?: ReactNode;
-  crossOrigin?: ImgHTMLAttributes<HTMLImageElement>["crossOrigin"];
-}
-
-export type RILScrollerImage = RILImageProps & {
-  hasError: boolean;
-  shouldLoad: boolean;
-  errorMessage?: ReactNode;
-}
-
-export type LightboxPointer = LightboxXY & {
-  id: string | number,
-  source?: number,
-}
-
-export type LightboxSrcTypeKey = keyof Pick<RILImageProps, "full" | "thumbnail">;
-export type LightboxSrcType = `${LightboxSrcTypeKey}-${number}`;
-
-export type LightboxImageCacheItem = {
-  loaded: boolean,
-  width: number,
-  height: number,
-}
-
-export type ReactImageLightboxGenerateLoadError = (err?: any) => void;
-export type ReactImageLightboxGenerateLoadDoneCallback = (type: LightboxSrcType, index: number, imageSrc: string) => ReactImageLightboxGenerateLoadError;
+import {RILToolbarButtonProps} from "./Components/RILToolbarButton";
 
 export type ReactImageLightboxProps = {
   // -----------------------------
@@ -136,11 +100,15 @@ export type ReactImageLightboxProps = {
   activeIndex: number;
   loadAhead: number;
   infiniteScrolling: boolean;
-}
 
-export type LightboxLoadErrorStatus = {
-  [key in LightboxSrcType]?: boolean;
-};
+  // Renderers
+  prevButtonRenderer?: (props: RILNavButtonProps) => JSX.Element;
+  nextButtonRenderer?: (props: RILNavButtonProps) => JSX.Element;
+
+  zoomInButtonRenderer?: (props: RILToolbarButtonProps) => JSX.Element;
+  zoomOutButtonRenderer?: (props: RILToolbarButtonProps) => JSX.Element;
+  closeButtonRenderer?: (props: RILToolbarButtonProps) => JSX.Element;
+}
 
 export type ReactImageLightboxState = {
   isClosing?: boolean;
@@ -153,6 +121,49 @@ export type ReactImageLightboxState = {
   loadableIndexes: number[];
   loadErrorStatus: LightboxLoadErrorStatus;
 }
+
+export type LightboxXY = {
+  x: number,
+  y: number,
+};
+
+export type LightboxTransform = LightboxXY & {
+  zoom: number;
+}
+
+export type RILImageProps = {
+  full: string;
+  thumbnail?: string;
+  title?: ReactNode;
+  crossOrigin?: ImgHTMLAttributes<HTMLImageElement>["crossOrigin"];
+}
+
+export type RILScrollerImage = RILImageProps & {
+  hasError: boolean;
+  shouldLoad: boolean;
+  errorMessage?: ReactNode;
+}
+
+export type LightboxPointer = LightboxXY & {
+  id: string | number,
+  source?: number,
+}
+
+export type LightboxSrcTypeKey = keyof Pick<RILImageProps, "full" | "thumbnail">;
+export type LightboxSrcType = `${LightboxSrcTypeKey}-${number}`;
+
+export type LightboxImageCacheItem = {
+  loaded: boolean,
+  width: number,
+  height: number,
+}
+
+export type ReactImageLightboxGenerateLoadError = (err?: any) => void;
+export type ReactImageLightboxGenerateLoadDoneCallback = (type: LightboxSrcType, index: number, imageSrc: string) => ReactImageLightboxGenerateLoadError;
+
+export type LightboxLoadErrorStatus = {
+  [key in LightboxSrcType]?: boolean;
+};
 
 export type RILBestImageForType = {
   targetHeight: number;

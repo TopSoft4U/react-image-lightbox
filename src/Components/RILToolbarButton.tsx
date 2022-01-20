@@ -1,23 +1,23 @@
 import {forwardRef,MouseEventHandler} from "react";
 import classNames from "classnames";
 
-type ToolbarButtonProps = {
-  label?: string,
+export type RILToolbarButtonProps = {
+  title?: string,
   className?: string,
   disabled?: boolean,
   onClick?: MouseEventHandler<HTMLButtonElement>
 };
 
-const ToolbarButton = forwardRef<HTMLButtonElement, ToolbarButtonProps>(
-  ({label, className, disabled = false, onClick}, ref) => {
+const RILToolbarButton = forwardRef<HTMLButtonElement, RILToolbarButtonProps>(
+  ({title, className, disabled = false, onClick}, ref) => {
     return (
       <li className="ril-toolbar-item">
         <button
           ref={ref}
           type="button"
           key="close"
-          aria-label={label}
-          title={label}
+          aria-label={title}
+          title={title}
           disabled={disabled}
           className={classNames(
             "ril-toolbar-item-child",
@@ -34,4 +34,4 @@ const ToolbarButton = forwardRef<HTMLButtonElement, ToolbarButtonProps>(
   }
 );
 
-export default ToolbarButton;
+export default RILToolbarButton;

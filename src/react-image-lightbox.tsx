@@ -14,8 +14,10 @@ import {
   WheelEventHandler
 } from "react";
 import classNames from "classnames";
-import {getHighestSafeWindowContext, getWindowHeight, getWindowWidth, loadableIndexes, stopEvent,arraySame} from "./util";
-
+import RILToolbarButton from "./Components/RILToolbarButton";
+import RILScroller from "./Components/RILScroller";
+import RILNavButton from "./Components/RILNavButton";
+import {arraySame, getHighestSafeWindowContext, getWindowHeight, getWindowWidth, loadableIndexes, stopEvent} from "./util";
 import {
   ACTION_MOVE,
   ACTION_NONE,
@@ -36,7 +38,6 @@ import {
   ZOOM_RATIO
 } from "./constant";
 import "./style.css";
-import ToolbarButton from "./Components/ToolbarButton";
 import {
   LightboxImageCacheItem,
   LightboxLoadErrorStatus,
@@ -50,7 +51,6 @@ import {
   RILBestImageForType,
   RILScrollerImage
 } from "./types";
-import Scroller from "./Components/Scroller";
 
 class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLightboxState> {
   static defaultProps = {
@@ -1230,6 +1230,12 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
       images,
       activeIndex,
       loadAhead,
+      // Renderers
+      prevButtonRenderer,
+      nextButtonRenderer,
+      zoomInButtonRenderer,
+      zoomOutButtonRenderer,
+      closeButtonRenderer,
     } = this.props;
     const {
       zoomLevel,
@@ -1260,6 +1266,12 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
 
     const activeImage = images.length > 0 ? images[Math.max(activeIndex, images.length - 1)] : undefined;
 
+    const ZoomInBtn = zoomInButtonRenderer ? zoomInButtonRenderer : RILToolbarButton;
+    const ZoomOutBtn = zoomOutButtonRenderer ? zoomOutButtonRenderer : RILToolbarButton;
+    const CloseBtn = closeButtonRenderer ? closeButtonRenderer : RILToolbarButton;
+    const PrevPageBtn = prevButtonRenderer ? prevButtonRenderer : RILNavButton;
+    const NextPageBtn = nextButtonRenderer ? nextButtonRenderer : RILNavButton;
+
     return (
       <div // eslint-disable-line jsx-a11y/no-static-element-interactions
         className={classNames(
@@ -1288,39 +1300,35 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
               toolbarButtons.map((button, i) => <li key={`button_${i + 1}`} className="ril-toolbar-item">{button}</li>)
             }
 
-            {enableZoom && (
-              <ToolbarButton
-                ref={this.zoomInBtn}
-                key="zoom-in"
-                label={this.props.zoomInLabel}
-                className="ril-zoom-in"
-                disabled={this.isAnimatingSnap() || zoomLevel === MAX_ZOOM_LEVEL}
-                onClick={this.handleZoomInButtonClick}
-              />
-            )}
+            {enableZoom && <ZoomInBtn
+              ref={this.zoomInBtn}
+              key="zoom-in"
+              title={this.props.zoomInLabel}
+              className="ril-zoom-in"
+              disabled={this.isAnimatingSnap() || zoomLevel === MAX_ZOOM_LEVEL}
+              onClick={this.handleZoomInButtonClick}
+            />}
 
-            {enableZoom && (
-              <ToolbarButton
-                ref={this.zoomOutBtn}
-                key="zoom-out"
-                label={this.props.zoomOutLabel}
-                className="ril-zoom-out"
-                disabled={this.isAnimatingSnap() || zoomLevel === MIN_ZOOM_LEVEL}
-                onClick={this.handleZoomOutButtonClick}
-              />
-            )}
+            {enableZoom && <ZoomOutBtn
+              ref={this.zoomOutBtn}
+              key="zoom-out"
+              title={this.props.zoomOutLabel}
+              className="ril-zoom-out"
+              disabled={this.isAnimatingSnap() || zoomLevel === MIN_ZOOM_LEVEL}
+              onClick={this.handleZoomOutButtonClick}
+            />}
 
-            <ToolbarButton
+            {closeButtonRenderer || <CloseBtn
               key="close"
-              label={this.props.closeLabel}
+              title={this.props.closeLabel}
               className="ril-close"
               disabled={this.isAnimatingSnap()}
               onClick={this.requestClose}
-            />
+            />}
           </ul>
         </div>}
 
-        <Scroller
+        <RILScroller
           key="scroller"
           ref={this.currentEl}
           className={this.props.innerClassName}
@@ -1330,6 +1338,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
             y: -1 * offsetY,
             zoom: zoomMultiplier,
           }}
+          zoomLevel={zoomLevel}
           isSnapAnimating={!animationDisabled && this.isAnimatingSnap()}
           onImageDoubleClick={this.handleImageDoubleClick}
           onImageWheel={this.handleImageMouseWheel}
@@ -1346,22 +1355,20 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
           {footer}
         </div>}
 
-        {this.getPrevSrc() && <button
-          type="button"
-          className="ril-nav-buttons ril-prev-button"
+        {this.getPrevSrc() && <PrevPageBtn
           key="prev"
-          aria-label={this.props.prevLabel}
+          className="ril-prev-button"
           title={this.props.prevLabel}
-          onClick={!this.isAnimatingSnap() ? this.requestMovePrev : undefined} // Ignore clicks during animation
+          disabled={this.isAnimatingSnap()}
+          onClick={this.requestMovePrev}
         />}
 
-        {this.getNextSrc() && <button
-          type="button"
-          className="ril-nav-buttons ril-next-button"
+        {this.getNextSrc() && <NextPageBtn
           key="next"
-          aria-label={this.props.nextLabel}
+          className="ril-next-button"
           title={this.props.nextLabel}
-          onClick={!this.isAnimatingSnap() ? this.requestMoveNext : undefined} // Ignore clicks during animation
+          disabled={this.isAnimatingSnap()}
+          onClick={this.requestMoveNext}
         />}
       </div>
     );

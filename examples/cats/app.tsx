@@ -2,6 +2,7 @@
 import {useState, useCallback} from "react";
 import {Modal} from "react-bootstrap";
 import {ReactImageLightboxProps} from "src/types";
+import {RILNavButtonProps} from "src/Components/RILNavButton";
 import Lightbox from "../../src";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./stylesheets/vendor/stylesheet.css";
@@ -80,6 +81,12 @@ const onImageLoadError: ReactImageLightboxProps["onImageLoadError"] = (imageSrc,
   console.error(`Could not load image at ${imageSrc}`, errorEvent); // eslint-disable-line no-console
 };
 
+const CustomPrevButton = ({onClick, disabled, ref}: RILNavButtonProps) => {
+  return <button className="custom-prev-button" onClick={onClick} disabled={disabled} ref={ref}>
+    Previous image
+  </button>;
+};
+
 const App = () => {
   const [index, setIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -107,9 +114,10 @@ const App = () => {
         onMovePrevRequest={movePrev}
         onMoveNextRequest={moveNext}
         onImageLoadError={onImageLoadError}
-        infiniteScrolling={true}
+        infiniteScrolling={false}
         discourageDownloads={true}
         onImageLoad={onImageLoad}
+        prevButtonRenderer={CustomPrevButton}
         loadAhead={1}
         footer={<div style={{height: "50px"}}>
           <button onClick={onClick}>test</button>

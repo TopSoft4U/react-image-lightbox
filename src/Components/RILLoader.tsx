@@ -1,4 +1,4 @@
-const Loader = () => {
+const RILLoader = () => {
   return (
     <div className="ril-loader">
       <svg
@@ -24,4 +24,4 @@ const Loader = () => {
   );
 };
 
-export default Loader;
+export default RILLoader;
