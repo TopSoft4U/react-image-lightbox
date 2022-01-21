@@ -1,14 +1,14 @@
 import {
   Component,
   createRef,
-  EventHandler,
-  KeyboardEventHandler,
-  MouseEvent,
-  MouseEventHandler,
-  PointerEvent,
-  PointerEventHandler,
+  EventHandler as ReactEventHandler,
+  KeyboardEventHandler as ReactKeyboardEventHandler,
+  MouseEvent as ReactMouseEvent,
+  MouseEventHandler as ReactMouseEventHandler,
+  PointerEvent as ReactPointerEvent,
+  PointerEventHandler as ReactPointerEventHandler,
   RefObject,
-  SyntheticEvent,
+  SyntheticEvent as ReactSyntheticEvent,
   Touch,
   TouchEventHandler,
   WheelEventHandler
@@ -155,7 +155,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
 
   private windowContext?: Window;
 
-  private listeners: { [key: string]: EventHandler<any> } = {};
+  private listeners: { [key: string]: ReactEventHandler<any> } = {};
 
   private didUnmount = false;
 
@@ -175,7 +175,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
     );
   };
 
-  static parseMouseEvent = (mouseEvent: MouseEvent<HTMLDivElement>): LightboxPointer => ({
+  static parseMouseEvent = (mouseEvent: ReactMouseEvent<HTMLDivElement>): LightboxPointer => ({
     id: "mouse",
     source: SOURCE_MOUSE,
     x: parseInt(String(mouseEvent.clientX), 10),
@@ -189,7 +189,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
     y: parseInt(String(touchPointer.clientY), 10),
   });
 
-  static parsePointerEvent = (pointerEvent: PointerEvent<HTMLDivElement>): LightboxPointer => ({
+  static parsePointerEvent = (pointerEvent: ReactPointerEvent<HTMLDivElement>): LightboxPointer => ({
     id: pointerEvent.pointerId,
     source: SOURCE_POINTER,
     x: parseInt(String(pointerEvent.clientX), 10),
@@ -551,7 +551,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
   /**
    * Handle user keyboard actions
    */
-  handleKeyInput: KeyboardEventHandler<HTMLDivElement> = (event) => {
+  handleKeyInput: ReactKeyboardEventHandler<HTMLDivElement> = (event) => {
     event.stopPropagation();
 
     // Allow slightly faster navigation through the images when user presses keys repeatedly
@@ -679,7 +679,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
   /**
    * Handle a double click on the current image
    */
-  handleImageDoubleClick: MouseEventHandler<HTMLDivElement> = (event) => {
+  handleImageDoubleClick: ReactMouseEventHandler<HTMLDivElement> = (event) => {
     if (this.props.singleClickZoom)
       return;
 
@@ -727,7 +727,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
     );
   };
 
-  handleMouseDown: MouseEventHandler<HTMLDivElement> = (event) => {
+  handleMouseDown: ReactMouseEventHandler<HTMLDivElement> = (event) => {
     if (
       this.shouldHandleEvent(SOURCE_MOUSE) &&
       ReactImageLightbox.isTargetMatchImage(event.target)
@@ -737,20 +737,20 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
     }
   }
 
-  handleMouseMove: MouseEventHandler<HTMLDivElement> = (event) => {
+  handleMouseMove: ReactMouseEventHandler<HTMLDivElement> = (event) => {
     if (this.shouldHandleEvent(SOURCE_MOUSE)) {
       this.multiPointerMove(event, [ReactImageLightbox.parseMouseEvent(event)]);
     }
   }
 
-  handleMouseUp: MouseEventHandler<HTMLDivElement> = (event) => {
+  handleMouseUp: ReactMouseEventHandler<HTMLDivElement> = (event) => {
     if (this.shouldHandleEvent(SOURCE_MOUSE)) {
       this.removePointer(ReactImageLightbox.parseMouseEvent(event));
       this.multiPointerEnd(event);
     }
   }
 
-  handlePointerEvent: PointerEventHandler<HTMLDivElement> = (event) => {
+  handlePointerEvent: ReactPointerEventHandler<HTMLDivElement> = (event) => {
     if (this.shouldHandleEvent(SOURCE_POINTER)) {
       switch (event.type) {
         case "pointerdown":
@@ -833,7 +833,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
     }
   };
 
-  multiPointerMove = (event: SyntheticEvent, pointerList: LightboxPointer[]) => {
+  multiPointerMove = (event: ReactSyntheticEvent, pointerList: LightboxPointer[]) => {
     switch (this.currentAction) {
       case ACTION_MOVE: {
         // stopEvent(event);
@@ -855,7 +855,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
     }
   };
 
-  multiPointerEnd = (event: SyntheticEvent) => {
+  multiPointerEnd = (event: ReactSyntheticEvent) => {
     if (this.currentAction !== ACTION_NONE) {
       this.handleEnd(event);
     }
@@ -879,14 +879,15 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
     }
   };
 
-  handleEnd = (event?: SyntheticEvent) => {
+  handleEnd = (event?: ReactSyntheticEvent) => {
     if (this.props.singleClickZoom && this.currentAction > ACTION_NONE) {
-      const wasMoved = this.state.offsetX !== this.moveStartOffsetX ||
-        this.state.offsetY !== this.moveStartOffsetY;
+      if (event && (event instanceof MouseEvent || event instanceof PointerEvent) && event.button === 0) {
+        const wasMoved = this.state.offsetX !== this.moveStartOffsetX ||
+          this.state.offsetY !== this.moveStartOffsetY;
 
-      const pointerEvent = event as PointerEvent;
-      if (!wasMoved)
-        this.toggleZoom(pointerEvent.clientX, pointerEvent.clientY);
+        if (!wasMoved)
+          this.toggleZoom(event.clientX, event.clientY);
+      }
     }
 
     switch (this.currentAction) {
@@ -983,7 +984,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
     this.swipeEndY = clientY;
   };
 
-  handleSwipeEnd = (event?: SyntheticEvent) => {
+  handleSwipeEnd = (event?: ReactSyntheticEvent) => {
     const xDiff = this.swipeEndX - this.swipeStartX;
     const xDiffAbs = Math.abs(xDiff);
     const yDiffAbs = Math.abs(this.swipeEndY - this.swipeStartY);
