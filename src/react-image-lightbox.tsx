@@ -147,9 +147,6 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
   private pinchTouchList: LightboxPointer[] = [];
   private pinchDistance = 0;
 
-  // Used to differentiate between images with identical src
-  private keyCounter = 0;
-
   // Used to detect a move when all src's remain unchanged (four or more of the same image in a row)
   private moveRequested = false;
 
@@ -380,7 +377,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
   getPrevSrc = () => {
     const {images, infiniteScrolling, activeIndex} = this.props;
 
-    if (!images.length)
+    if (!images.length || images.length <= 1)
       return;
 
     let index = activeIndex - 1;
@@ -395,7 +392,7 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
   getNextSrc = () => {
     const {images, infiniteScrolling, activeIndex} = this.props;
 
-    if (!images.length)
+    if (!images.length || images.length <= 1)
       return;
 
     let index = activeIndex + 1;
@@ -405,7 +402,6 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
       index = 0;
 
     return images[index].full;
-
   }
 
   /**
@@ -1213,11 +1209,9 @@ class ReactImageLightbox extends Component<ReactImageLightboxProps, ReactImageLi
     this.moveRequested = true;
 
     if (direction === "prev") {
-      this.keyCounter -= 1;
       this.setState(nextState);
       this.props.onMovePrevRequest?.();
     } else {
-      this.keyCounter += 1;
       this.setState(nextState);
       this.props.onMoveNextRequest?.();
     }
