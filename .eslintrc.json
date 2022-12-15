@@ -1,6 +1,10 @@
 {
   "extends": [
-    "@topsoft4u"
+    "@topsoft4u",
+    "prettier"
+  ],
+  "plugins": [
+    "prettier"
   ],
   "rules": {
     "no-undef": "off",
