@@ -886,7 +886,9 @@ class ReactImageLightbox extends Component<
     if (this.props.singleClickZoom && this.currentAction > ACTION_NONE) {
       if (
         event &&
-        (event instanceof MouseEvent || event instanceof PointerEvent) &&
+        (event instanceof MouseEvent ||
+          (typeof PointerEvent !== "undefined" &&
+            event instanceof PointerEvent)) &&
         event.button === 0
       ) {
         const wasMoved =
